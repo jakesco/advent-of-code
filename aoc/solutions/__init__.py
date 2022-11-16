@@ -10,9 +10,9 @@ SOLUTION_REGISTRY = {
 
 def run(day: int, filename: Path, verbose: bool = False):
     if day not in SOLUTION_REGISTRY.keys():
-        raise IndexError("Day not implemented yet.")
+        raise IndexError("day not implemented yet: '%s'" % day)
     if not filename.exists():
-        raise FileNotFoundError("Input file doesn't exist.")
+        raise FileNotFoundError("input file does not exist: '%s'" % filename)
 
     shared.verbose.set(verbose)
     if shared.verbose.get():

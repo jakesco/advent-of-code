@@ -20,11 +20,11 @@ args = parser.parse_args()
 try:
     run(args.day, args.filename, args.verbose)
 except FileNotFoundError as e:
-    sys.stderr.write("Error: %s" % e)
+    sys.stderr.write("aoc: error: %s\n" % e)
     sys.exit(1)
 except IndexError as e:
-    sys.stderr.write("Error: %s" % e)
+    sys.stderr.write("aoc: error: %s\n" % e)
     sys.exit(2)
 except Exception as e:
-    sys.stderr.write("Unknown Error: %s" % e)
+    sys.stderr.write("aoc: error: %s\n" % e)
     sys.exit(3)
