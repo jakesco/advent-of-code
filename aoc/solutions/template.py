@@ -7,5 +7,5 @@ def main(filename: Path) -> Solution:
     if verbose.get():
         print("Running with verbose output.")
     with filename.open() as f:
-        print("Contents: \n", f.read())
+        print(f.read())
     return Solution()
