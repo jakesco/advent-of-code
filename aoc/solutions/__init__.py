@@ -8,7 +8,20 @@ from typing import Callable
 SOLUTION_REGEX = re.compile(r"day(?P<day>[0-2][1-9])")
 
 
-def find_solutions() -> dict[int, Callable]:
+def run(day: int, filename: Path):
+    """Run solution for a given day."""
+    solution_registry = _find_solutions()
+
+    if day not in solution_registry.keys():
+        raise IndexError("day not implemented yet: '%s'" % day)
+    if not filename.exists():
+        raise FileNotFoundError("input file does not exist: '%s'" % filename)
+
+    solution = solution_registry[day](filename)
+    print(solution)
+
+
+def _find_solutions() -> dict[int, Callable]:
     """Walks `solutions` package directory finding all modules with a name like dayXX.
     Will then register the `main` function for each day in a dictionary.
     """
@@ -20,15 +33,3 @@ def find_solutions() -> dict[int, Callable]:
             solution_map[day] = getattr(module, "main")
     return solution_map
 
-
-def run(day: int, filename: Path):
-    """Run solution for a given day."""
-    solution_registry = find_solutions()
-
-    if day not in solution_registry.keys():
-        raise IndexError("day not implemented yet: '%s'" % day)
-    if not filename.exists():
-        raise FileNotFoundError("input file does not exist: '%s'" % filename)
-
-    solution = solution_registry[day](filename)
-    print(solution)
