@@ -1,7 +1,4 @@
-from contextvars import ContextVar
 from dataclasses import dataclass
-
-verbose = ContextVar("verbose", default=False)
 
 
 @dataclass

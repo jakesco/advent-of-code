@@ -11,14 +11,11 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument("day", type=int, help="Solution day to run, between 1 and 25.")
 parser.add_argument("filename", type=Path, help="Path to puzzle input file.")
-parser.add_argument(
-    "-v", "--verbose", action="store_true", help="Toggle verbose output."
-)
 
 args = parser.parse_args()
 
 try:
-    run(args.day, args.filename, args.verbose)
+    run(args.day, args.filename)
 except FileNotFoundError as e:
     sys.stderr.write("aoc: error: %s\n" % e)
     sys.exit(1)

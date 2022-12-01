@@ -5,8 +5,6 @@ from importlib.util import find_spec
 from pathlib import Path
 from typing import Callable
 
-from . import shared
-
 SOLUTION_REGEX = re.compile(r"day(?P<day>[0-2][1-9])")
 
 
@@ -23,7 +21,7 @@ def find_solutions() -> dict[int, Callable]:
     return solution_map
 
 
-def run(day: int, filename: Path, verbose: bool = False):
+def run(day: int, filename: Path):
     """Run solution for a given day."""
     solution_registry = find_solutions()
 
@@ -32,9 +30,5 @@ def run(day: int, filename: Path, verbose: bool = False):
     if not filename.exists():
         raise FileNotFoundError("input file does not exist: '%s'" % filename)
 
-    shared.verbose.set(verbose)
-    if shared.verbose.get():
-        print(f"Running day {day} solution on input {filename}...")
-
-    solution: shared.Solution = solution_registry[day](filename)
+    solution = solution_registry[day](filename)
     print(solution)
