@@ -34,4 +34,3 @@ def _find_solutions() -> dict[int, Callable[[Path], Solution]]:
             day = int(match.group("day"))
             solution_map[day] = getattr(module, "main")
     return solution_map
-
