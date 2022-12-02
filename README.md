@@ -10,6 +10,7 @@ $ python aoc <day> <input>
 ## Solutions
 
 * Day 01: [Calorie Counting](https://adventofcode.com/2022/day/1) | [solution](./aoc/solutions/day01.py)
+* Day 02: [Rock Paper Scissors](https://adventofcode.com/2022/day/2) | [solution](./aoc/solutions/day02.py)
 
 
 ## Puzzle Input Tip
