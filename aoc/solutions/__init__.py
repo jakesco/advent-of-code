@@ -5,23 +5,25 @@ from importlib.util import find_spec
 from pathlib import Path
 from typing import Callable
 
+from .shared import Solution
+
 SOLUTION_REGEX = re.compile(r"day(?P<day>[0-2][1-9])")
 
 
-def run(day: int, filename: Path):
+def solve(day: int, filename: Path) -> Solution:
     """Run solution for a given day."""
-    solution_registry = _find_solutions()
 
-    if day not in solution_registry.keys():
-        raise IndexError("day not implemented yet: '%s'" % day)
     if not filename.exists():
         raise FileNotFoundError("input file does not exist: '%s'" % filename)
 
-    solution = solution_registry[day](filename)
-    print(solution)
+    solution_registry = _find_solutions()
+    if day not in solution_registry.keys():
+        raise IndexError("day not implemented yet: '%s'" % day)
+
+    return solution_registry[day](filename)
 
 
-def _find_solutions() -> dict[int, Callable]:
+def _find_solutions() -> dict[int, Callable[[Path], Solution]]:
     """Walks `solutions` package directory finding all modules with a name like dayXX.
     Will then register the `main` function for each day in a dictionary.
     """

@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from solutions import run
+from solutions import solve
 
 parser = argparse.ArgumentParser(
     prog="aoc",
@@ -15,7 +15,8 @@ parser.add_argument("filename", type=Path, help="Path to puzzle input file.")
 args = parser.parse_args()
 
 try:
-    run(args.day, args.filename)
+    solution = solve(args.day, args.filename)
+    print(solution)
 except FileNotFoundError as e:
     sys.stderr.write("aoc: error: %s\n" % e)
     sys.exit(1)
