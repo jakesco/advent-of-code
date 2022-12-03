@@ -11,6 +11,7 @@ $ python aoc <day> <input>
 
 * Day 01: [Calorie Counting](https://adventofcode.com/2022/day/1) | [solution](./aoc/solutions/day01.py)
 * Day 02: [Rock Paper Scissors](https://adventofcode.com/2022/day/2) | [solution](./aoc/solutions/day02.py)
+* Day 03: [Rucksack Reorganization](https://adventofcode.com/2022/day/3) | [solution](./aoc/solutions/day03.py)
 
 
 ## Puzzle Input Tip
