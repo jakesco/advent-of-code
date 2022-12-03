@@ -4,15 +4,14 @@ from .shared import Solution
 
 
 def main(filename: Path) -> Solution:
-    solution = Solution()
     with filename.open() as f:
         rucksacks = f.read().splitlines()
 
     priorities = [shared_priority(rucksack) for rucksack in rucksacks]
-    solution.part1 = sum(priorities)
-    solution.part2 = group_priorities(rucksacks)
+    part1 = sum(priorities)
+    part2 = group_priorities(rucksacks)
 
-    return solution
+    return Solution(part1, part2)
 
 
 def shared_priority(rucksack: str) -> int:
