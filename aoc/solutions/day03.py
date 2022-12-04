@@ -1,12 +1,7 @@
-from pathlib import Path
-
 from .shared import Solution
 
 
-def main(filename: Path) -> Solution:
-    with filename.open() as f:
-        rucksacks = f.read().splitlines()
-
+def main(rucksacks: list[str]) -> Solution:
     priorities = [shared_priority(rucksack) for rucksack in rucksacks]
     part1 = sum(priorities)
     part2 = group_priorities(rucksacks)

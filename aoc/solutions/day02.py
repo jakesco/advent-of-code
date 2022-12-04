@@ -1,5 +1,4 @@
 import enum
-from pathlib import Path
 
 from .shared import Solution
 
@@ -32,15 +31,14 @@ MOVES = {
 }
 
 
-def main(filename: Path) -> Solution:
+def main(input_: list[str]) -> Solution:
     solution = Solution()
-    with filename.open() as f:
-        for line in f.read().splitlines():
-            moves = line.split(" ")
-            opponent, you = [MOVES[m] for m in moves]
-            solution.part1 += score(opponent, you)
-            you = OUTCOMES[moves[1]]
-            solution.part2 += score(opponent, you)
+    for line in input_:
+        moves = line.split(" ")
+        opponent, you = [MOVES[m] for m in moves]
+        solution.part1 += score(opponent, you)
+        you = OUTCOMES[moves[1]]
+        solution.part2 += score(opponent, you)
     return solution
 
 

@@ -1,10 +1,6 @@
-from pathlib import Path
-
 from .shared import Solution
 
 
-def main(filename: Path) -> Solution:
-    solution = Solution()
-    with filename.open() as f:
-        print(f.read())
-    return solution
+def main(input_: list[str]) -> Solution:
+    print(input_)
+    return Solution()

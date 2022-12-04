@@ -20,10 +20,13 @@ def solve(day: int, filename: Path) -> Solution:
     if day not in solution_registry.keys():
         raise IndexError("day not implemented yet: '%s'" % day)
 
-    return solution_registry[day](filename)
+    with filename.open() as f:
+        input_ = f.read().splitlines()
+
+    return solution_registry[day](input_)
 
 
-def _find_solutions() -> dict[int, Callable[[Path], Solution]]:
+def _find_solutions() -> dict[int, Callable[[list[str]], Solution]]:
     """Walks `solutions` package directory finding all modules with a name like dayXX.
     Will then register the `main` function for each day in a dictionary.
     """
