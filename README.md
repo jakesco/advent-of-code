@@ -13,6 +13,7 @@ $ python aoc <day> <input>
 * Day 02: [Rock Paper Scissors](https://adventofcode.com/2022/day/2) | [solution](./aoc/solutions/day02.py)
 * Day 03: [Rucksack Reorganization](https://adventofcode.com/2022/day/3) | [solution](./aoc/solutions/day03.py)
 * Day 04: [Camp Cleanup](https://adventofcode.com/2022/day/4) | [solution](./aoc/solutions/day04.py)
+* Day 05: [Supply Stacks](https://adventofcode.com/2022/day/5) | [solution](./aoc/solutions/day05.py)
 
 
 ## Puzzle Input Tip
