@@ -14,6 +14,7 @@ $ python aoc <day> <input>
 * Day 03: [Rucksack Reorganization](https://adventofcode.com/2022/day/3) | [solution](./aoc/solutions/day03.py)
 * Day 04: [Camp Cleanup](https://adventofcode.com/2022/day/4) | [solution](./aoc/solutions/day04.py)
 * Day 05: [Supply Stacks](https://adventofcode.com/2022/day/5) | [solution](./aoc/solutions/day05.py)
+* Day 06: [Tuning Trouble](https://adventofcode.com/2022/day/6) | [solution](./aoc/solutions/day06.py)
 
 
 ## Puzzle Input Tip
