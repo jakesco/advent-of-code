@@ -5,15 +5,6 @@ from itertools import product
 from typing import Any, Callable
 
 
-NEIGHBORS = [(0, -1), (-1, 0), (1, 0), (0, 1)]
-DIAG_NEIGHBORS = [
-    (x, y)
-    for x, y in product((-1, 0, 1), (-1, 0, 1))
-    if (x, y) != (0, 0)
-    ]
-
-
-
 @dataclass
 class Solution:
     part1: int | str = 0
@@ -27,6 +18,15 @@ class Solution:
 class P:
     x: int
     y: int
+
+    def add(self, p: P) -> P:
+        return P(self.x + p.x, self.y + p.y)
+
+
+_NEIGHBORS = [P(0, -1), P(-1, 0), P(1, 0), P(0, 1)]
+_DIAG_NEIGHBORS = [
+    P(x, y) for x, y in product((-1, 0, 1), (-1, 0, 1)) if (x, y) != (0, 0)
+]
 
 
 class Grid(dict):
@@ -42,7 +42,9 @@ class Grid(dict):
         return len({p.y for p in self.keys()})
 
     @classmethod
-    def from_lines(cls, lines: list[Any], convert: Callable = int) -> Grid:
+    def from_lines(
+        cls, lines: list[str], convert: Callable[[str], Any] = int
+    ) -> Grid[P, Any]:
         grid = cls()
         for y, line in enumerate(lines):
             for x, point in enumerate(line):
@@ -64,7 +66,7 @@ class Grid(dict):
         return [value for point, value in self.items() if point.x == x]
 
     def neighbors(self, p: P, *, diag: bool = False) -> dict[P, Any]:
-        neigh = DIAG_NEIGHBORS if diag else NEIGHBORS
+        neigh = (p.add(point) for point in (_DIAG_NEIGHBORS if diag else _NEIGHBORS))
         return {point: self.get(point) for point in neigh}
 
     def is_edge(self, p: P) -> bool:
