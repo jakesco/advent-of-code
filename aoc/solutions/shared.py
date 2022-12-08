@@ -5,6 +5,15 @@ from itertools import product
 from typing import Any, Callable
 
 
+NEIGHBORS = [(0, -1), (-1, 0), (1, 0), (0, 1)]
+DIAG_NEIGHBORS = [
+    (x, y)
+    for x, y in product((-1, 0, 1), (-1, 0, 1))
+    if (x, y) != (0, 0)
+    ]
+
+
+
 @dataclass
 class Solution:
     part1: int | str = 0
@@ -14,7 +23,7 @@ class Solution:
         return f"Part 1: {self.part1}\nPart 2: {self.part2}"
 
 
-@dataclass(frozen=True, eq=True, order=True)
+@dataclass(frozen=True, slots=True, order=True)
 class P:
     x: int
     y: int
@@ -55,14 +64,7 @@ class Grid(dict):
         return [value for point, value in self.items() if point.x == x]
 
     def neighbors(self, p: P, *, diag: bool = False) -> dict[P, Any]:
-        if diag:
-            neigh = (
-                P(p.x + x, p.y + y)
-                for x, y in product((-1, 0, 1), (-1, 0, 1))
-                if (x, y) != (0, 0)
-            )
-        else:
-            neigh = (P(p.x, p.y - 1), P(p.x - 1 , p.y), P(p.x + 1, p.y), P(p.x, p.y + 1))
+        neigh = DIAG_NEIGHBORS if diag else NEIGHBORS
         return {point: self.get(point) for point in neigh}
 
     def is_edge(self, p: P) -> bool:

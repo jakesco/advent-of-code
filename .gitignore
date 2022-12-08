@@ -133,3 +133,6 @@ dmypy.json
 
 # Advent cookie session token
 .token
+
+# Don't publish inputs
+*.txt
