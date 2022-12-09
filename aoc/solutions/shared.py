@@ -22,6 +22,12 @@ class P:
     def add(self, p: P) -> P:
         return P(self.x + p.x, self.y + p.y)
 
+    def diff(self, p: P) -> P:
+        return P(self.x - p.x, self.y - p.y)
+
+    def mag(self) -> float:
+        return abs(complex(self.x, self.y))
+
 
 _NEIGHBORS = [P(0, -1), P(-1, 0), P(1, 0), P(0, 1)]
 _DIAG_NEIGHBORS = [

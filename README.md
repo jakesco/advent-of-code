@@ -16,6 +16,8 @@ $ python aoc <day> <input>
 * Day 05: [Supply Stacks](https://adventofcode.com/2022/day/5) | [solution](./aoc/solutions/day05.py)
 * Day 06: [Tuning Trouble](https://adventofcode.com/2022/day/6) | [solution](./aoc/solutions/day06.py)
 * Day 07: [No Space Left On Device](https://adventofcode.com/2022/day/7) | [solution](./aoc/solutions/day07.py)
+* Day 08: [Treetop Tree House](https://adventofcode.com/2022/day/8) | [solution](./aoc/solutions/day08.py)
+* Day 09: [Rope Bridge](https://adventofcode.com/2022/day/9) | [solution](./aoc/solutions/day09.py)
 
 
 ## Puzzle Input Tip
