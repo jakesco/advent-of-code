@@ -1,4 +1,4 @@
-from itertools import chain, product
+from itertools import chain
 
 from .shared import P, Solution
 
@@ -28,26 +28,15 @@ def main(input_: list[str]) -> Solution:
 
 
 def update_knot(h: P, t: P) -> P:
-    if adjacent(h, t):
-        return t
-
     diff = h.diff(t)
-    if diff.mag() > 1:
+    if diff.mag() > 1.5:
         vec = unit(diff)
         return t.add(vec)
-
     return t
 
 
-def adjacent(h: P, t: P) -> bool:
-    neighbors = (
-        h.add(P(x, y)) for x, y in product((-1, 0, 1), (-1, 0, 1)) if (x, y) != (0, 0)
-    )
-    return t in neighbors
-
-
 def unit(p: P) -> P:
-    """Make an integer unit vector"""
+    """Make a 'kind of' unit vector"""
     if p.x == 0:
         return P(0, p.y // abs(p.y))
     if p.y == 0:
