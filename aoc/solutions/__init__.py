@@ -7,7 +7,7 @@ from typing import Callable
 
 from .shared import Solution
 
-SOLUTION_REGEX = re.compile(r"day(?P<day>[0-2][1-9])")
+SOLUTION_REGEX = re.compile(r"day(?P<day>\d+)")
 
 
 def solve(day: int, filename: Path) -> Solution:
