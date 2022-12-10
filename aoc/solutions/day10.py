@@ -23,11 +23,11 @@ class CPU:
         return self.x - 1, self.x, self.x + 1
 
     def draw(self):
-        cycle = self.cycles
-        if (cycle - 1) % 40 in self.window():
-            self.screen[cycle - 1] = "#"
+        pixel = self.cycles - 1
+        if pixel % 40 in self.window():
+            self.screen[pixel] = "#"
         else:
-            self.screen[cycle - 1] = "."
+            self.screen[pixel] = "."
 
     def __str__(self) -> str:
         output = []
