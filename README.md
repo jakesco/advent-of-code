@@ -19,6 +19,7 @@ $ python aoc <day> <input>
 * Day 08: [Treetop Tree House](https://adventofcode.com/2022/day/8) | [solution](./aoc/solutions/day08.py)
 * Day 09: [Rope Bridge](https://adventofcode.com/2022/day/9) | [solution](./aoc/solutions/day09.py)
 * Day 10: [Cathode-Ray Tube](https://adventofcode.com/2022/day/10) | [solution](./aoc/solutions/day10.py)
+* Day 11: [Monkey in the Middle](https://adventofcode.com/2022/day/11) | [solution](./aoc/solutions/day11.py)
 
 
 ## Puzzle Input Tip
