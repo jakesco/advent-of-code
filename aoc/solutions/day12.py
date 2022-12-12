@@ -1,16 +1,9 @@
 from __future__ import annotations
 
-from copy import deepcopy
-from dataclasses import dataclass
+import math
+from typing import Callable
 
 from .shared import Grid, P, Solution
-
-
-@dataclass
-class Path:
-    current: P
-    previous: list[P]
-    cost: float
 
 
 def main(input_: list[str]) -> Solution:
@@ -19,40 +12,19 @@ def main(input_: list[str]) -> Solution:
     grid[start] = "a"
     grid[end] = "z"
 
-    shortest_path = None
-    init = Path(start, [], 0)
-    visited: set[P] = set()
-    q: list[Path] = [init]
+    part1 = dijkstra_shortest_path(grid, start, adjacent_part1)[end]
+    part2 = min(
+        [
+            dist
+            for node, dist in sorted(
+                dijkstra_shortest_path(grid, end, adjacent_part2).items(),
+                key=lambda item: item[1],
+            )
+            if grid[node] == "a"
+        ]
+    )
 
-    while q:
-        candidate = q.pop()
-
-        if candidate.current in visited:
-            continue
-
-        if candidate.current == end:
-            shortest_path = candidate
-            break
-
-        for node in grid.neighbors(candidate.current):
-            if node in visited:
-                continue
-
-            if not one_step_up(grid.get(candidate.current), grid.get(node)):
-                continue
-
-            cost = end.dist(node) + candidate.cost
-            previous = deepcopy(candidate.previous)
-            previous.append(candidate.current)
-            new_path = Path(node, previous, cost)
-            q.append(new_path)
-
-        visited.add(candidate.current)
-        q.sort(key=lambda p: p.cost, reverse=True)
-
-    render_path(shortest_path, grid)
-    part1 = len(shortest_path.previous) or 0
-    return Solution(part1)
+    return Solution(part1, part2)
 
 
 def find_start_and_end(grid: Grid) -> tuple[P, P]:
@@ -65,33 +37,46 @@ def find_start_and_end(grid: Grid) -> tuple[P, P]:
     return start, end
 
 
-def next_step(grid: Grid, current: P, target: P) -> P:
-    candidates = [
-        n
-        for n in grid.neighbors(current)
-        if one_step_up(grid[current], grid.get(n, "a"))
-    ]
-    if target in candidates:
-        return target
-    direction = [(n, target.diff(n).mag()) for n in candidates]
-    return sorted(direction, key=lambda x: x[1])[0][0]
+def dijkstra_shortest_path(
+    grid: Grid, start: P, adjacent: Callable[[Grid, P], list[P]]
+) -> dict[P, int]:
+    distances = {p: math.inf for p in grid.keys()}
+    distances[start] = 0
+
+    q = list(distances.keys())
+    while q:
+        q.sort(key=lambda node: distances[node], reverse=True)
+        current = q.pop()
+
+        for adj in adjacent(grid, current):
+            new_dist = distances[current] + 1
+            if new_dist < distances[adj]:
+                distances[adj] = new_dist
+
+    return distances
 
 
-def one_step_up(start: str, end: str) -> bool:
-    if start is None or end is None:
-        return False
-    start = str_to_ascii(start)
-    end = str_to_ascii(end)
-    return end <= start + 1
+def adjacent_part1(grid: Grid, point: P) -> list[P]:
+    height = str_to_ascii(grid.get(point))
+    neighbors = []
+    for node, h in grid.neighbors(point).items():
+        if h is None:
+            continue
+        if str_to_ascii(h) <= height + 1:
+            neighbors.append(node)
+    return neighbors
+
+
+def adjacent_part2(grid: Grid, point: P) -> list[P]:
+    height = str_to_ascii(grid.get(point))
+    neighbors = []
+    for node, h in grid.neighbors(point).items():
+        if h is None:
+            continue
+        if str_to_ascii(h) >= height - 1:
+            neighbors.append(node)
+    return neighbors
 
 
 def str_to_ascii(char: str) -> int:
     return int.from_bytes(bytes(char, "ascii"), byteorder="big")
-
-
-def render_path(path: Path, grid: Grid):
-    g = deepcopy(grid)
-    for p in path.previous:
-        g[p] = "."
-    g[path.current] = "."
-    print(g)
