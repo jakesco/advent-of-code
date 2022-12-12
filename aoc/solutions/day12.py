@@ -1,7 +1,4 @@
-from __future__ import annotations
-
 import math
-from typing import Callable
 
 from .shared import Grid, P, Solution
 
@@ -12,17 +9,9 @@ def main(input_: list[str]) -> Solution:
     grid[start] = "a"
     grid[end] = "z"
 
-    part1 = dijkstra_shortest_path(grid, start, adjacent_part1)[end]
-    part2 = min(
-        [
-            dist
-            for node, dist in sorted(
-                dijkstra_shortest_path(grid, end, adjacent_part2).items(),
-                key=lambda item: item[1],
-            )
-            if grid[node] == "a"
-        ]
-    )
+    paths = dijkstra_shortest_path(grid, end)
+    part1 = paths[start]
+    part2 = min([dist for node, dist in paths.items() if grid[node] == "a"])
 
     return Solution(part1, part2)
 
@@ -37,9 +26,7 @@ def find_start_and_end(grid: Grid) -> tuple[P, P]:
     return start, end
 
 
-def dijkstra_shortest_path(
-    grid: Grid, start: P, adjacent: Callable[[Grid, P], list[P]]
-) -> dict[P, int]:
+def dijkstra_shortest_path(grid: Grid, start: P) -> dict[P, int]:
     distances = {p: math.inf for p in grid.keys()}
     distances[start] = 0
 
@@ -56,19 +43,8 @@ def dijkstra_shortest_path(
     return distances
 
 
-def adjacent_part1(grid: Grid, point: P) -> list[P]:
-    height = str_to_ascii(grid.get(point))
-    neighbors = []
-    for node, h in grid.neighbors(point).items():
-        if h is None:
-            continue
-        if str_to_ascii(h) <= height + 1:
-            neighbors.append(node)
-    return neighbors
-
-
-def adjacent_part2(grid: Grid, point: P) -> list[P]:
-    height = str_to_ascii(grid.get(point))
+def adjacent(grid: Grid, point: P) -> list[P]:
+    height = str_to_ascii(grid[point])
     neighbors = []
     for node, h in grid.neighbors(point).items():
         if h is None:
