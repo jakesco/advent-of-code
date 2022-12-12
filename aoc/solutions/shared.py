@@ -28,6 +28,9 @@ class P:
     def mag(self) -> float:
         return abs(complex(self.x, self.y))
 
+    def dist(self, other: P) -> float:
+        return self.diff(other).mag()
+
 
 _NEIGHBORS = [P(0, -1), P(-1, 0), P(1, 0), P(0, 1)]
 _DIAG_NEIGHBORS = [
