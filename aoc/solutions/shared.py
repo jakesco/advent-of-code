@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from itertools import product, islice
+from itertools import islice, product
 from typing import Any, Callable
 
 
@@ -90,7 +90,7 @@ def batched(iterable, n):
     """
     # batched('ABCDEFG', 3) --> ABC DEF G
     if n < 1:
-        raise ValueError('n must be at least one')
+        raise ValueError("n must be at least one")
     it = iter(iterable)
-    while (batch := list(islice(it, n))):
+    while batch := list(islice(it, n)):
         yield batch

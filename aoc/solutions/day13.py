@@ -7,7 +7,13 @@ from .shared import Solution, batched
 def main(input_: list[str]) -> Solution:
     packets = [eval(line) for line in input_ if line]
 
-    part1 = sum([idx for idx, [left, right] in enumerate(batched(packets, 2), start=1) if compare(left, right) < 0])
+    part1 = sum(
+        [
+            idx
+            for idx, [left, right] in enumerate(batched(packets, 2), start=1)
+            if compare(left, right) < 0
+        ]
+    )
 
     packets.extend([[[2]], [[6]]])
     packets = sorted(packets, key=cmp_to_key(compare))
