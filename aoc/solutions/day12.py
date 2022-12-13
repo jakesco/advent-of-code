@@ -9,7 +9,7 @@ def main(input_: list[str]) -> Solution:
     grid[start] = "a"
     grid[end] = "z"
 
-    paths = dijkstra_shortest_path(grid, end)
+    paths = shortest_paths(grid, end)
     part1 = paths[start]
     part2 = min([dist for node, dist in paths.items() if grid[node] == "a"])
 
@@ -26,7 +26,7 @@ def find_start_and_end(grid: Grid) -> tuple[P, P]:
     return start, end
 
 
-def dijkstra_shortest_path(grid: Grid, start: P) -> dict[P, int]:
+def shortest_paths(grid: Grid, start: P) -> dict[P, int]:
     distances = {p: math.inf for p in grid.keys()}
     distances[start] = 0
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from itertools import product
+from itertools import product, islice
 from typing import Any, Callable
 
 
@@ -81,3 +81,16 @@ class Grid(dict):
     def is_edge(self, p: P) -> bool:
         neigh = self.neighbors(p, diag=True)
         return any(n is None for n in neigh.values())
+
+
+def batched(iterable, n):
+    """
+    Batch data into lists of length n. The last batch may be shorter.
+    Recipe from https://docs.python.org/3/library/itertools.html#itertools-recipes
+    """
+    # batched('ABCDEFG', 3) --> ABC DEF G
+    if n < 1:
+        raise ValueError('n must be at least one')
+    it = iter(iterable)
+    while (batch := list(islice(it, n))):
+        yield batch
