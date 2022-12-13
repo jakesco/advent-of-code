@@ -1,3 +1,4 @@
+from ast import literal_eval
 from functools import cmp_to_key
 from itertools import zip_longest
 
@@ -5,7 +6,7 @@ from .shared import Solution, batched
 
 
 def main(input_: list[str]) -> Solution:
-    packets = [eval(line) for line in input_ if line]
+    packets = [literal_eval(line) for line in input_ if line]
 
     part1 = sum(
         [
