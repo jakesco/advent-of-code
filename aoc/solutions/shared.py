@@ -31,6 +31,17 @@ class P:
     def dist(self, other: P) -> float:
         return self.diff(other).mag()
 
+    def line(self, b: P) -> list[P]:
+        start = min(self, b)
+        end = max(self, b)
+        if self.x == b.x:
+            c = end.diff(start)
+            return [P(start.x, start.y + y) for y in range(c.y + 1)]
+        if self.y == b.y:
+            c = end.diff(start)
+            return [P(start.x + x, start.y) for x in range(c.x + 1)]
+        raise NotImplementedError("Diagonal lines not supported")
+
 
 _NEIGHBORS = [P(0, -1), P(-1, 0), P(1, 0), P(0, 1)]
 _DIAG_NEIGHBORS = [
@@ -50,6 +61,12 @@ class Grid(dict):
     def rows(self) -> int:
         return len({p.y for p in self.keys()})
 
+    def max_x(self) -> int:
+        return max({p.y for p in self.keys()})
+
+    def max_y(self) -> int:
+        return max({p.y for p in self.keys()})
+
     @classmethod
     def from_lines(
         cls, lines: list[str], convert: Callable[[str], Any] = int
@@ -60,11 +77,29 @@ class Grid(dict):
                 grid[P(x, y)] = convert(point)
         return grid
 
+    def render_graph(self, x_range: range, y_range: range):
+        print(
+            "\n".join(
+                [
+                    "".join([str(self.get(P(x, y), ".")) for x in x_range])
+                    for y in y_range
+                ]
+            )
+        )
+        print()
+
     def __str__(self) -> str:
+        x_min = min([p.x for p in self.keys()]) - 2
+        y_min = min([p.y for p in self.keys()])
         return "\n".join(
             [
-                "".join([str(self.get(P(x, y), " ")) for x in range(self.cols)])
-                for y in range(self.rows)
+                "".join(
+                    [
+                        str(self.get(P(x, y), "."))
+                        for x in range(x_min, x_min + self.cols + 4)
+                    ]
+                )
+                for y in range(y_min, y_min + self.rows + 4)
             ]
         )
 
