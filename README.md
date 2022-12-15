@@ -23,6 +23,7 @@ $ python aoc <day> <input>
 * Day 12: [Hill Climbing Algorithm](https://adventofcode.com/2022/day/12) | [solution](./aoc/solutions/day12.py)
 * Day 13: [Distress Signal](https://adventofcode.com/2022/day/13) | [solution](./aoc/solutions/day13.py)
 * Day 14: [Regolith Reservoir](https://adventofcode.com/2022/day/14) | [solution](./aoc/solutions/day14.py)
+* Day 15: [Beacon Exclusion Zone](https://adventofcode.com/2022/day/15) | [solution](./aoc/solutions/day15.py)
 
 
 ## Puzzle Input Tip

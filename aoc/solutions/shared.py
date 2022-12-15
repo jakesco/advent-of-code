@@ -31,6 +31,10 @@ class P:
     def dist(self, other: P) -> float:
         return self.diff(other).mag()
 
+    def m_dist(self, other: P) -> int:
+        d = self.diff(other)
+        return abs(d.x) + abs(d.y)
+
     def line(self, b: P) -> list[P]:
         start = min(self, b)
         end = max(self, b)
@@ -41,6 +45,17 @@ class P:
             c = end.diff(start)
             return [P(start.x + x, start.y) for x in range(c.x + 1)]
         raise NotImplementedError("Diagonal lines not supported")
+
+    def points_in_range(self, m_dist: int) -> set[P]:
+        """Outputs all points within `range` of Self"""
+        points = set()
+        for x in range(-m_dist, m_dist + 1):
+            for y in range(-m_dist, m_dist + 1):
+                p = P(self.x + x, self.y + y)
+                dist = self.m_dist(p)
+                if dist <= m_dist and dist != 0:
+                    points.add(p)
+        return points
 
 
 _NEIGHBORS = [P(0, -1), P(-1, 0), P(1, 0), P(0, 1)]
