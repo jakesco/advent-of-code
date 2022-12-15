@@ -7,9 +7,9 @@ from dataclasses import dataclass
 from .shared import P, Solution
 
 # ROW = 10
-# MAX_ROW = 20
+# MAX_ROW = 21
 ROW = 2_000_000
-MAX_ROW = 4_000_000
+MAX_ROW = 4_000_001
 
 
 @dataclass(frozen=True, eq=True, order=True)
@@ -49,8 +49,16 @@ class SensorData:
 def main(input_: list[str]) -> Solution:
     sensor_data = parse_sensor_data(input_)
 
-    part1 = analyze_row(sensor_data, ROW)[0].length()
-    part2 = tuning_frequency(analyze_rows(sensor_data))
+    part1 = analyze_row(ROW, sensor_data)[0].length()
+
+    # This takes about 3m 30s
+    part2 = 0
+    for row in range(MAX_ROW):
+        result = analyze_row(row, sensor_data)
+        if len(result) > 1:
+            part2 = tuning_frequency(get_missing_point(result, row))
+            break
+
     return Solution(part1, part2)
 
 
@@ -65,25 +73,14 @@ def parse_sensor_data(sensor_locations: list[str]) -> list[SensorData]:
     return sensor_pairs
 
 
-def analyze_rows(sensor_data: list[SensorData]) -> P:
-    x, y = 0, 0
-    lines = []
-    for row in range(MAX_ROW + 1):
-        y = row
-        lines = analyze_row(sensor_data, row)
-        if len(lines) > 1:
-            break
-
-    if len(lines) < 2:
-        return P(x, y)
-
+def get_missing_point(lines: list[HorizontalLine], row: int) -> P:
     lines.sort()
     a, b = lines
     x = (b.x_min + a.x_max) // 2
-    return P(x, y)
+    return P(x, row)
 
 
-def analyze_row(sensor_data: list[SensorData], row: int) -> list[HorizontalLine]:
+def analyze_row(row: int, sensor_data: list[SensorData]) -> list[HorizontalLine]:
     scanner_lines = []
     for pair in sensor_data:
         scanner_lines.extend(pair.lines(row))
