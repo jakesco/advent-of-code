@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import os
 import re
 from collections import deque
 from dataclasses import dataclass
+from multiprocessing import Process, SimpleQueue
 
 from .shared import P, Solution
 
@@ -51,14 +53,26 @@ def main(input_: list[str]) -> Solution:
 
     part1 = analyze_row(ROW, sensor_data)[0].length()
 
-    # This takes about 3m 30s
-    part2 = 0
-    for row in range(MAX_ROW):
-        result = analyze_row(row, sensor_data)
-        if len(result) > 1:
-            part2 = tuning_frequency(get_missing_point(result, row))
-            break
+    # Part 2, distribute work among all cores
+    cores = os.cpu_count()
+    interval = MAX_ROW // cores
+    ranges = [range(p * interval, p * interval + interval) for p in range(cores - 1)]
+    ranges.append(range((cores - 1) * interval, MAX_ROW))
 
+    q = SimpleQueue()
+    workers = [
+        Process(target=analyze_rows, args=(r, sensor_data.copy(), q)) for r in ranges
+    ]
+
+    for worker in workers:
+        worker.start()
+
+    result = q.get()
+
+    for worker in workers:
+        worker.terminate()
+
+    part2 = tuning_frequency(result)
     return Solution(part1, part2)
 
 
@@ -71,13 +85,6 @@ def parse_sensor_data(sensor_locations: list[str]) -> list[SensorData]:
         distance = sensor.m_dist(beacon)
         sensor_pairs.append(SensorData(sensor, beacon, distance))
     return sensor_pairs
-
-
-def get_missing_point(lines: list[HorizontalLine], row: int) -> P:
-    lines.sort()
-    a, b = lines
-    x = (b.x_min + a.x_max) // 2
-    return P(x, row)
 
 
 def analyze_row(row: int, sensor_data: list[SensorData]) -> list[HorizontalLine]:
@@ -105,6 +112,20 @@ def dedup_intervals(lines: list[HorizontalLine]) -> list[HorizontalLine]:
         else:
             stack[0] = top.merge(line)
     return list(stack)
+
+
+def analyze_rows(rows: range, sensor_data: list[SensorData], q: SimpleQueue):
+    for row in rows:
+        lines = analyze_row(row, sensor_data)
+        if len(lines) > 1:
+            q.put(get_missing_point(lines, row))
+
+
+def get_missing_point(lines: list[HorizontalLine], row: int) -> P:
+    lines.sort()
+    a, b = lines
+    x = (b.x_min + a.x_max) // 2
+    return P(x, row)
 
 
 def tuning_frequency(p: P) -> int:
