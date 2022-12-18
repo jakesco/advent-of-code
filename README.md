@@ -25,6 +25,8 @@ $ python aoc <day> <input>
 * Day 14: [Regolith Reservoir](https://adventofcode.com/2022/day/14) | [solution](./aoc/solutions/day14.py)
 * Day 15: [Beacon Exclusion Zone](https://adventofcode.com/2022/day/15) | [solution](./aoc/solutions/day15.py)
 * Day 16: [Proboscidea Volcanium](https://adventofcode.com/2022/day/16) | [solution](./aoc/solutions/day16.py)
+* Day 17: [Pyroclastic Flow](https://adventofcode.com/2022/day/17) | [solution](./aoc/solutions/day17.py)
+* Day 18: [Boiling Boulders](https://adventofcode.com/2022/day/18) | [solution](./aoc/solutions/day18.py)
 
 
 ## Puzzle Input Tip

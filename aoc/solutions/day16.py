@@ -1,12 +1,15 @@
 from __future__ import annotations
-import re
-import math
-from pprint import pprint
-from dataclasses import dataclass
 
-from functools import cached_property
+import math
+import random
+import re
+from dataclasses import dataclass
+from functools import partial
 
 from .shared import Solution
+
+# from itertools import permutations
+
 
 RE_VALVE = re.compile(
     r"Valve (?P<name>[A-Z]{2}).*rate=(?P<rate>\d+);.*valves? (?P<connections>.*)"
@@ -14,6 +17,10 @@ RE_VALVE = re.compile(
 
 START = "AA"
 STEPS = 30
+ITERATIONS = 100_000
+# ITERATIONS = 10
+
+# 2442 too low
 
 
 @dataclass(frozen=True, eq=True)
@@ -75,40 +82,83 @@ class Graph:
     def rate(self, node: str) -> int:
         return self.nodes[node].rate
 
-    def important_nodes(self) -> list[Node]:
-        return [node for node in self.nodes.values() if node.rate > 0]
-
+    def important_nodes(self) -> list[str]:
+        nodes = [node.name for node in self.nodes.values() if node.rate > 0]
+        random.shuffle(nodes)
+        return nodes
 
 
 def main(input_: list[str]) -> Solution:
     graph = Graph.from_input(input_)
-    scenario = ["DD", "BB", "JJ", "HH", "EE", "CC"]
-    sol = eval_scenario(graph, scenario)
-    print(sol)
-
-    return Solution()
+    part1 = simulated_annealing(graph)
+    part2 = simulated_annealing_part2(graph)
+    return Solution(part1, part2)
 
 
-def eval_scenario(graph: Graph, scenario: list[str]) -> int:
+def simulated_annealing(graph: Graph) -> int:
+    calc_score = partial(eval_scenario, graph=graph)
+    scenario = graph.important_nodes()
+    current = calc_score(scenario)
+    for iter in range(ITERATIONS):
+        new_scenario = neighbor(scenario)
+        new_score = calc_score(new_scenario)
+        if accept(current, new_score, iter):
+            scenario = new_scenario
+            current = new_score
+    return current
+
+
+def simulated_annealing_part2(graph: Graph) -> int:
+    calc_score = partial(eval_scenario, graph=graph, max_steps=STEPS - 4)
+    scenario = graph.important_nodes()
+    half = len(scenario) // 2
+    current = calc_score(scenario[:half]) + calc_score(scenario[half:])
+    for iter in range(ITERATIONS):
+        new_scenario = neighbor(scenario)
+        half = len(new_scenario) // 2
+        new_score = calc_score(new_scenario[:half]) + calc_score(new_scenario[half:])
+        if accept(current, new_score, iter):
+            scenario = new_scenario
+            current = new_score
+    return current
+
+
+def neighbor(scenario: list[str]) -> list[str]:
+    sample = random.sample(scenario, 2)
+    i, j = scenario.index(sample[0]), scenario.index(sample[1])
+    scenario[i], scenario[j] = scenario[j], scenario[i]
+    return scenario
+
+
+def accept(old_score: int, new_score: int, iteration) -> bool:
+    if old_score < new_score:
+        p = 1
+    else:
+        t = temperature(iteration) + 0.0001
+        p = math.exp(-(old_score - new_score) / t)
+    return p >= random.random()
+
+
+def temperature(iteration: int) -> float:
+    return 1 - (iteration + 1) / ITERATIONS
+
+
+def eval_scenario(scenario: list[str], *, graph: Graph, max_steps: int = STEPS) -> int:
     pressure_released = 0
     steps = 0
     current = START
     open_valves = []
-    while steps <= STEPS and scenario:
-        node = scenario.pop(0)
-        print(current, steps, pressure_released, open_valves)
+    for node in scenario:
         dist = graph.distance(current, node) + 1
-        pressure_released += sum(open_valves) * dist
         steps += dist
+        if steps >= max_steps:
+            steps -= dist
+            break
+        pressure_released += sum(open_valves) * dist
         current = node
         open_valves.append(graph.rate(current))
-    pressure_released += sum(open_valves) * (STEPS - steps)
+
+    if steps < max_steps:
+        pressure_released += sum(open_valves) * (max_steps - steps)
+
     return pressure_released
-
-
-
-
-
-
-
-
