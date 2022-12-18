@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+from copy import deepcopy
 import math
 import random
 import re
 from dataclasses import dataclass
 from functools import partial
+from multiprocessing import Pool, SimpleQueue
 
+from typing import Iterator
 from .shared import Solution
 
-# from itertools import permutations
+from itertools import permutations
 
 
 RE_VALVE = re.compile(
@@ -17,8 +20,7 @@ RE_VALVE = re.compile(
 
 START = "AA"
 STEPS = 30
-ITERATIONS = 1_000_000_000
-# ITERATIONS = 10
+CHUNK = 100_000
 
 
 @dataclass(frozen=True, eq=True)
@@ -81,81 +83,35 @@ class Graph:
         return self.nodes[node].rate
 
     def important_nodes(self) -> list[str]:
-        nodes = [node.name for node in self.nodes.values() if node.rate > 0]
-        random.shuffle(nodes)
-        return nodes
+        return [node.name for node in self.nodes.values() if node.rate > 0]
 
 
 def main(input_: list[str]) -> Solution:
     graph = Graph.from_input(input_)
     part1 = part2 = 0
-    # part1 = simulated_annealing(graph)
-    part2 = simulated_annealing_part2(graph)
+    eval_ = partial(eval_scenario, graph=graph)
+    with Pool() as p:
+        results = p.imap_unordered(eval_, permutations(graph.important_nodes(), r=9), chunksize=CHUNK)
+        best = max([result for result in results])
+    print(best)
+
     return Solution(part1, part2)
 
 
-def simulated_annealing(graph: Graph) -> int:
-    calc_score = partial(eval_scenario, graph=graph)
-    scenario = graph.important_nodes()
-    current = calc_score(scenario)
-    for iter in range(ITERATIONS):
-        new_scenario = neighbor(scenario, iter)
-        new_score = calc_score(new_scenario)
-        if accept(current, new_score, iter):
-            scenario = new_scenario
-            current = new_score
-    return current
-
-
-def simulated_annealing_part2(graph: Graph) -> int:
-    calc_score = partial(eval_scenario, graph=graph, max_steps=STEPS - 4)
-    scenario = graph.important_nodes()
-    half = len(scenario) // 2
-    current = calc_score(scenario[:half]) + calc_score(scenario[half:])
-    for iter in range(ITERATIONS):
-        new_scenario = neighbor(scenario, iter)
-        half = len(new_scenario) // 2
-        new_score = calc_score(new_scenario[:half]) + calc_score(new_scenario[half:])
-        if accept(current, new_score, iter):
-            scenario = new_scenario
-            current = new_score
-    return current
-
-
-def neighbor(scenario: list[str], iter: int) -> list[str]:
-    i = random.randint(0, len(scenario) - 2)
-    j = random.randint(0, len(scenario) - 1)
-    if iter > ITERATIONS // 4:
-        scenario[i], scenario[i + 1] = scenario[i + 1], scenario[i]
-    else:
-        scenario[i], scenario[j] = scenario[j], scenario[i]
-    return scenario
-
-
-def accept(old_score: int, new_score: int, iteration) -> bool:
-    if old_score < new_score:
-        p = 1
-    else:
-        t = temperature(iteration) + 0.0001
-        p = math.exp(-(old_score - new_score) / t)
-    return p >= random.random()
-
-
-def temperature(iteration: int) -> float:
-    return 1 - (iteration + 1) / ITERATIONS
-
-
-def eval_scenario(scenario: list[str], *, graph: Graph, max_steps: int = STEPS) -> int:
+def eval_scenario(scenario: str, *, graph: Graph, max_steps: int = STEPS) -> int:
+    graph = deepcopy(graph)
     pressure_released = 0
     steps = 0
     current = START
     open_valves = []
+    checked = 0
     for node in scenario:
         dist = graph.distance(current, node) + 1
         steps += dist
         if steps >= max_steps:
             steps -= dist
             break
+        checked += 1
         pressure_released += sum(open_valves) * dist
         current = node
         open_valves.append(graph.rate(current))
