@@ -17,10 +17,8 @@ RE_VALVE = re.compile(
 
 START = "AA"
 STEPS = 30
-ITERATIONS = 100_000
+ITERATIONS = 1_000_000_000
 # ITERATIONS = 10
-
-# 2442 too low
 
 
 @dataclass(frozen=True, eq=True)
@@ -90,7 +88,8 @@ class Graph:
 
 def main(input_: list[str]) -> Solution:
     graph = Graph.from_input(input_)
-    part1 = simulated_annealing(graph)
+    part1 = part2 = 0
+    # part1 = simulated_annealing(graph)
     part2 = simulated_annealing_part2(graph)
     return Solution(part1, part2)
 
@@ -100,7 +99,7 @@ def simulated_annealing(graph: Graph) -> int:
     scenario = graph.important_nodes()
     current = calc_score(scenario)
     for iter in range(ITERATIONS):
-        new_scenario = neighbor(scenario)
+        new_scenario = neighbor(scenario, iter)
         new_score = calc_score(new_scenario)
         if accept(current, new_score, iter):
             scenario = new_scenario
@@ -114,7 +113,7 @@ def simulated_annealing_part2(graph: Graph) -> int:
     half = len(scenario) // 2
     current = calc_score(scenario[:half]) + calc_score(scenario[half:])
     for iter in range(ITERATIONS):
-        new_scenario = neighbor(scenario)
+        new_scenario = neighbor(scenario, iter)
         half = len(new_scenario) // 2
         new_score = calc_score(new_scenario[:half]) + calc_score(new_scenario[half:])
         if accept(current, new_score, iter):
@@ -123,10 +122,13 @@ def simulated_annealing_part2(graph: Graph) -> int:
     return current
 
 
-def neighbor(scenario: list[str]) -> list[str]:
-    sample = random.sample(scenario, 2)
-    i, j = scenario.index(sample[0]), scenario.index(sample[1])
-    scenario[i], scenario[j] = scenario[j], scenario[i]
+def neighbor(scenario: list[str], iter: int) -> list[str]:
+    i = random.randint(0, len(scenario) - 2)
+    j = random.randint(0, len(scenario) - 1)
+    if iter > ITERATIONS // 4:
+        scenario[i], scenario[i + 1] = scenario[i + 1], scenario[i]
+    else:
+        scenario[i], scenario[j] = scenario[j], scenario[i]
     return scenario
 
 
