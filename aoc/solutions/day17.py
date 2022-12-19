@@ -1,26 +1,100 @@
-from dataclasses import dataclass
-from itertools import cycle
-from typing import Iterator
+from collections import deque
+from dataclasses import dataclass, field
+from itertools import cycle, islice
+from typing import Iterable, Iterator, NewType
 
-from .shared import Grid, P, Solution
+from .shared import Solution
 
 FALLEN_ROCKS = 2022
 
+Row = NewType("Row", tuple[int, ...])
 
-@dataclass
+
+def row_to_str(row: Iterable) -> str:
+    return "".join(["#" if r else "." for r in row])
+
+
 class Rock:
-    shape: list[int]
-    top_left: P = P(0, 0)
+    def __init__(self, shape: list[deque[int]]):
+        self.shape = shape
+        self.overlap = deque(maxlen=len(shape))
+
+    def __str__(self):
+        output = []
+        for row in self.shape:
+            output.append(f"|{row_to_str(row)}|")
+        return "\n".join(output)
+
+    def _collide_left(self, stack_rows: list[Row] = None) -> bool:
+        if any([r[0] for r in self.shape]):
+            return True
+        return False
+
+    def _collide_right(self, stack_rows: list[Row] = None) -> bool:
+        if any([r[-1] for r in self.shape]):
+            return True
+        return False
+
+    def _collide_down(self, stack_rows: list[Row] = None) -> bool:
+        # TODO
+        return False
+
+    def move(self, direction: int, stack_rows: list[Row] = None) -> bool:
+        if direction < 0 and not self._collide_left(stack_rows):
+            for row in self.shape:
+                row.rotate(-1)
+            return False
+        if direction > 0 and not self._collide_right(stack_rows):
+            for row in self.shape:
+                row.rotate(1)
+            return False
+        return self._collide_down(stack_rows)
+
+    def add_overlap(self, row: Row):
+        self.overlap.append(row)
+
+    def settle(self) -> list[Row]:
+        return [Row(tuple(islice(r, 7))) for r in reversed(self.shape)]
+
+
+class Chamber(deque):
+    def __init__(self, *args, **kwargs):
+        super(Chamber, self).__init__(*args, **kwargs)
+
+    def __str__(self):
+        output = []
+        output.append("|.......|")
+        for row in self:
+            output.append(f"|{row_to_str(row)}|")
+        output.append("+-------+")
+        return "\n".join(output)
+
+    def pop_many(self, n: int = 1) -> Iterator[Row]:
+        for _ in range(n):
+            try:
+                yield self.popleft()
+            except IndexError:
+                break
 
 
 def main(input_: list[str]) -> Solution:
-    grid = Grid()
+    chamber = Chamber()
     jets = air_jet(input_[0])
     rocks = falling_rocks()
+    for _ in range(5):
+        simulate_fall(chamber, rocks, jets)
+    print(chamber)
 
+    part1 = part2 = 0
+    part1 = len(chamber)
+    return Solution(part1, part2)
+
+
+def simulate_fall(chamber: Chamber, rocks: Iterator[Rock], jets: Iterator[int]):
     rock = next(rocks)
-
-    return Solution()
+    for _ in range(4):
+        rock.move(next(jets))
+    chamber.extendleft(rock.settle())
 
 
 def air_jet(pattern: str) -> Iterator[int]:
@@ -31,35 +105,26 @@ def air_jet(pattern: str) -> Iterator[int]:
 def falling_rocks() -> Iterator[Rock]:
     # fmt: off
     rocks = (
+        Rock([deque([0, 0, 1, 1, 1, 1, 0])]),
         Rock([
-            1, 1, 1, 1,
-            0, 0, 0, 0,
-            0, 0, 0, 0,
-            0, 0, 0, 0,
+            deque([0, 0, 0, 1, 0, 0, 0]),
+            deque([0, 0, 1, 1, 1, 0, 0]),
+            deque([0, 0, 0, 1, 0, 0, 0]),
         ]),
         Rock([
-            0, 1, 0, 0,
-            1, 1, 1, 0,
-            0, 1, 0, 0,
-            0, 0, 0, 0,
+            deque([0, 0, 0, 0, 1, 0, 0]),
+            deque([0, 0, 0, 0, 1, 0, 0]),
+            deque([0, 0, 1, 1, 1, 0, 0]),
         ]),
         Rock([
-            0, 0, 1, 0,
-            0, 0, 1, 0,
-            1, 1, 1, 0,
-            0, 0, 0, 0,
+            deque([0, 0, 1, 0, 0, 0, 0]),
+            deque([0, 0, 1, 0, 0, 0, 0]),
+            deque([0, 0, 1, 0, 0, 0, 0]),
+            deque([0, 0, 1, 0, 0, 0, 0]),
         ]),
         Rock([
-            1, 0, 0, 0,
-            1, 0, 0, 0,
-            1, 0, 0, 0,
-            1, 0, 0, 0,
-        ]),
-        Rock([
-            1, 1, 0, 0,
-            1, 1, 0, 0,
-            0, 0, 0, 0,
-            0, 0, 0, 0,
+            deque([0, 0, 1, 1, 0, 0, 0]),
+            deque([0, 0, 1, 1, 0, 0, 0]),
         ]),
     )
     # fmt: on
