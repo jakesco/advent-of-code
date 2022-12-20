@@ -12,10 +12,10 @@ NEIGHBORS = {
 def main(input_: list[str]) -> Solution:
     points = {P3(*map(int, p.split(","))) for p in input_}
 
-    all_faces = [exposed_faces(p, points) for p in points]
-    part1 = sum(all_faces)
-    print(islands(points))
-    part2 = 0
+    part1 = sum([exposed_faces(p, points) for p in points])
+
+    part2 = find_outside_points(points)
+    part2 = len(part2)
     return Solution(part1, part2)
 
 
@@ -24,12 +24,17 @@ def exposed_faces(point: P3, points: set[P3]) -> int:
     overlap = neighbors.intersection(points)
     return 6 - len(overlap)
 
-def islands(points: set[P3]) -> set[P3]:
-    air_pockets = set()
-    for point in points:
-        neighbors = {point.add(n) for n in NEIGHBORS}
-        if neighbors.isdisjoint(points):
-            air_pockets.add(point)
-    return air_pockets
+def find_outside_points(points: set[P3]) -> set[P3]:
+    start = P3(0, 0, 0)
+    q = [start]
+    visited = set()
+    outside_points = set()
+    while q:
+        c = q.pop(0)
+        if c == end:
+            break
+        for adj in {c.add(n) for n in NEIGHBORS}:
+    print(start, end)
+    return set()
 
 

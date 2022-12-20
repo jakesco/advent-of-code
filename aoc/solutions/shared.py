@@ -58,7 +58,7 @@ class P:
         return points
 
 
-@dataclass(frozen=True, slots=True, order=True)
+@dataclass(frozen=True, slots=True, eq=True, order=True)
 class P3:
     x: int
     y: int
