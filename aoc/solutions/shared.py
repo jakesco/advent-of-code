@@ -58,6 +58,15 @@ class P:
         return points
 
 
+@dataclass(frozen=True, slots=True, order=True)
+class P3:
+    x: int
+    y: int
+    z: int
+
+    def add(self, p: P3) -> P3:
+        return P3(self.x + p.x, self.y + p.y, self.z + p.z)
+
 _NEIGHBORS = [P(0, -1), P(-1, 0), P(1, 0), P(0, 1)]
 _DIAG_NEIGHBORS = [
     P(x, y) for x, y in product((-1, 0, 1), (-1, 0, 1)) if (x, y) != (0, 0)
