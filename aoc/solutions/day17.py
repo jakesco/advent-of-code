@@ -6,7 +6,6 @@ from typing import Iterable, Iterator, NewType
 
 from .shared import Solution
 
-# Test ans: 1514285714288
 FALLEN_ROCKS = 2022
 IMPRESS_THE_ELEPHANTS = 1_000_000_000_000
 EMPTY_ROW = (0, 0, 0, 0, 0, 0, 0)
@@ -113,91 +112,120 @@ class Chamber(deque):
                 break
         return popped
 
+    def col_heights(self) -> tuple[int, ...]:
+        count = [0, 0, 0, 0, 0, 0, 0]
+        check = {0, 1, 2, 3, 4, 5, 6}
+        found = set()
+        for row in self:
+            if not check:
+                return tuple(count)
+            for idx in check:
+                if row[idx] == 1:
+                    found.add(idx)
+                else:
+                    count[idx] += 1
+            check.difference_update(found)
 
-@dataclass
-class Cycle:
-    height: int
-    rocks: int
+
+class Cave:
+    def __init__(self, pattern: str):
+        self.air_jets = self._air_jets(pattern)
+        self.rocks = self._falling_rocks()
+
+    def _air_jets(self, pattern: str) -> Iterator[int]:
+        """Pushes -1 for left and 1 for right."""
+        pattern_len = len(pattern)
+        for idx, jet in enumerate(cycle(1 if x == ">" else -1 for x in pattern)):
+            self.jet_index = idx % pattern_len
+            yield jet
+
+    def _falling_rocks(self) -> Iterator[Rock]:
+        # fmt: off
+        rocks = (
+            Rock([deque([0, 0, 1, 1, 1, 1, 0])]),
+            Rock([
+                deque([0, 0, 0, 1, 0, 0, 0]),
+                deque([0, 0, 1, 1, 1, 0, 0]),
+                deque([0, 0, 0, 1, 0, 0, 0]),
+            ]),
+            Rock([
+                deque([0, 0, 0, 0, 1, 0, 0]),
+                deque([0, 0, 0, 0, 1, 0, 0]),
+                deque([0, 0, 1, 1, 1, 0, 0]),
+            ]),
+            Rock([
+                deque([0, 0, 1, 0, 0, 0, 0]),
+                deque([0, 0, 1, 0, 0, 0, 0]),
+                deque([0, 0, 1, 0, 0, 0, 0]),
+                deque([0, 0, 1, 0, 0, 0, 0]),
+            ]),
+            Rock([
+                deque([0, 0, 1, 1, 0, 0, 0]),
+                deque([0, 0, 1, 1, 0, 0, 0]),
+            ]),
+        )
+        # fmt: on
+        for idx, rock in enumerate(cycle(rocks)):
+            self.rock_index = idx % 5
+            yield rock
+
+
+@dataclass(frozen=True, slots=True, eq=True)
+class Iteration:
+    jet_index: int = 0
+    rock_index: int = 0
+    delta_height: int = 0
+    col_heights: tuple[int, ...] = (0, 0, 0, 0, 0, 0, 0)
 
 
 def main(input_: list[str]) -> Solution:
     chamber = Chamber()
-    jets = air_jet(input_[0])
-    rocks = falling_rocks()
+    cave = Cave(input_[0])
 
-    rocks_fallen = 0
-    for _ in range(FALLEN_ROCKS):
-        simulate_fall(chamber, rocks, jets)
-        rocks_fallen += 1
-    part1 = len(chamber)
+    iterations = [Iteration()]
+    prev_height = 0
+    while True:
+        simulate_fall(chamber, cave)
+        height = len(chamber)
+        iter = Iteration(
+            cave.jet_index, cave.rock_index, height - prev_height, chamber.col_heights()
+        )
+        prev_height = height
+        # Find Cycle
+        if iter in iterations:
+            break
+        iterations.append(iter)
 
-    # Try to find a cycle
-    cycle_detected = False
-    while not cycle_detected:
-        cycle_detected = find_cycle(chamber, rocks, jets)
-        rocks_fallen += 1
-        print(rocks_fallen)
-    rock_cycle = Cycle(len(chamber) // 2, rocks_fallen)
+    idx = iterations.index(iter)
+    rocks_so_far = len(iterations)
+    delta_rocks = len(iterations) - idx
+    delta_height = sum([i.delta_height for i in iterations[idx : len(iterations)]])
+    print(rocks_so_far, delta_rocks, delta_height)
+    x = FALLEN_ROCKS - rocks_so_far
+    z = x / delta_rocks
+    part1 = int(len(chamber) + z * delta_height)
+    rocks_so_far += x
+    print(rocks_so_far)
 
-    part2 = len(chamber)
-    while rocks_fallen < IMPRESS_THE_ELEPHANTS:
-        part2 += rock_cycle.height
-        rocks_fallen += rock_cycle.rocks
-
+    part2 = 0
+    print(f"Part 2 TEST: {part2 == 1514285714288}")
     return Solution(part1, part2)
 
 
-def simulate_fall(chamber: Chamber, rocks: Iterator[Rock], jets: Iterator[int]):
-    rock = next(rocks)
+def simulate_fall(chamber: Chamber, cave: Cave):
+    rock = next(cave.rocks)
     for _ in range(4):
-        rock.move(next(jets))
+        rock.move(next(cave.air_jets))
     overlap = 0
     while overlap < len(chamber):
         rock.overlap.appendleft(chamber[overlap])
         if rock.move(0):
             break
-        rock.move(next(jets))
+        rock.move(next(cave.air_jets))
         overlap += 1
     chamber.pop_many(overlap)
     chamber.extendleft(rock.settle())
 
 
-def find_cycle(chamber: Chamber, rocks: Iterator[Rock], jets: Iterator[int]) -> bool:
-    simulate_fall(chamber, rocks, jets)
-    first_half = islice(chamber, len(chamber) // 2)
-    second_half = islice(chamber, len(chamber) // 2, len(chamber))
-    return all([a == b for a, b in zip_longest(first_half, second_half)])
-
-
-def air_jet(pattern: str) -> Iterator[int]:
-    """Pushes -1 for left and 1 for right."""
-    yield from cycle(1 if x == ">" else -1 for x in pattern)
-
-
-def falling_rocks() -> Iterator[Rock]:
-    # fmt: off
-    rocks = (
-        Rock([deque([0, 0, 1, 1, 1, 1, 0])]),
-        Rock([
-            deque([0, 0, 0, 1, 0, 0, 0]),
-            deque([0, 0, 1, 1, 1, 0, 0]),
-            deque([0, 0, 0, 1, 0, 0, 0]),
-        ]),
-        Rock([
-            deque([0, 0, 0, 0, 1, 0, 0]),
-            deque([0, 0, 0, 0, 1, 0, 0]),
-            deque([0, 0, 1, 1, 1, 0, 0]),
-        ]),
-        Rock([
-            deque([0, 0, 1, 0, 0, 0, 0]),
-            deque([0, 0, 1, 0, 0, 0, 0]),
-            deque([0, 0, 1, 0, 0, 0, 0]),
-            deque([0, 0, 1, 0, 0, 0, 0]),
-        ]),
-        Rock([
-            deque([0, 0, 1, 1, 0, 0, 0]),
-            deque([0, 0, 1, 1, 0, 0, 0]),
-        ]),
-    )
-    # fmt: on
-    yield from cycle(rocks)
+def find_cycle():
+    pass
