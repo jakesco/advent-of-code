@@ -1,7 +1,7 @@
 from collections import deque
 from copy import deepcopy
 from dataclasses import dataclass
-from itertools import cycle, islice, zip_longest
+from itertools import cycle, zip_longest
 from typing import Iterable, Iterator, NewType
 
 from .shared import Solution
@@ -175,7 +175,7 @@ class Iteration:
     jet_index: int = 0
     rock_index: int = 0
     delta_height: int = 0
-    col_heights: tuple[int, ...] = (0, 0, 0, 0, 0, 0, 0)
+    col_heights: tuple[int, ...] = EMPTY_ROW
 
 
 def main(input_: list[str]) -> Solution:
@@ -184,31 +184,29 @@ def main(input_: list[str]) -> Solution:
 
     iterations = [Iteration()]
     prev_height = 0
+    rocks_fallen = 0
     while True:
         simulate_fall(chamber, cave)
         height = len(chamber)
-        iter = Iteration(
+        iter_ = Iteration(
             cave.jet_index, cave.rock_index, height - prev_height, chamber.col_heights()
         )
-        prev_height = height
-        # Find Cycle
-        if iter in iterations:
+        # Look for cycle
+        if iter_ in iterations:
             break
-        iterations.append(iter)
+        rocks_fallen += 1
+        iterations.append(iter_)
+        prev_height = height
 
-    idx = iterations.index(iter)
-    rocks_so_far = len(iterations)
-    delta_rocks = len(iterations) - idx
-    delta_height = sum([i.delta_height for i in iterations[idx : len(iterations)]])
-    print(rocks_so_far, delta_rocks, delta_height)
-    x = FALLEN_ROCKS - rocks_so_far
-    z = x / delta_rocks
-    part1 = int(len(chamber) + z * delta_height)
-    rocks_so_far += x
-    print(rocks_so_far)
+    # Cycle found
+    current_height = len(chamber) - iter_.delta_height
+    idx = iterations.index(iter_)
+    rock_cycle = iterations[idx:]
 
-    part2 = 0
-    print(f"Part 2 TEST: {part2 == 1514285714288}")
+    part1 = finish_with_cycle(current_height, FALLEN_ROCKS - rocks_fallen, rock_cycle)
+    part2 = finish_with_cycle(
+        current_height, IMPRESS_THE_ELEPHANTS - rocks_fallen, rock_cycle
+    )
     return Solution(part1, part2)
 
 
@@ -227,5 +225,17 @@ def simulate_fall(chamber: Chamber, cave: Cave):
     chamber.extendleft(rock.settle())
 
 
-def find_cycle():
-    pass
+def finish_with_cycle(
+    start_height: int, rocks_remaining: int, rock_cycle: list[Iteration]
+) -> int:
+    delta_height = sum([i.delta_height for i in rock_cycle])
+    delta_rocks = len(rock_cycle)
+    number_of_cycles, remaining = divmod(rocks_remaining, delta_rocks)
+
+    chamber_height = start_height + delta_height * number_of_cycles
+
+    iter_rock_cycle = cycle(iter(rock_cycle))
+    for _ in range(remaining):
+        chamber_height += next(iter_rock_cycle).delta_height
+
+    return chamber_height
