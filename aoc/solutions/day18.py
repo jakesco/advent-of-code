@@ -17,15 +17,15 @@ def exposed_faces(point: P3, points: set[P3]) -> int:
 
 
 def exterior_faces(points: set[P3]) -> int:
-    start = P3(0, 0, 0)
-    max_coord = max(max(points).to_tuple()) + 2
+    max_coord = max([max(p.to_tuple()) for p in points]) + 2
     in_boundary = partial(in_bounds, boundary_point=P3(max_coord, max_coord, max_coord))
+    start = P3(0, 0, 0)
 
-    q = [start]
+    q = {start}
     visited = set()
     faces = 0
     while q:
-        c = q.pop(0)
+        c = q.pop()
         visited.add(c)
         for adj in neighbors_3d(c):
             if not in_boundary(adj):
@@ -33,9 +33,9 @@ def exterior_faces(points: set[P3]) -> int:
             if adj in points:
                 faces += 1
                 continue
-            if adj in visited or adj in q:
+            if adj in visited:
                 continue
-            q.append(adj)
+            q.add(adj)
     return faces
 
 
@@ -43,4 +43,4 @@ def exterior_faces(points: set[P3]) -> int:
 def in_bounds(point: P3, boundary_point: P3) -> bool:
     a, b, c = boundary_point.to_tuple()
     x, y, z = point.to_tuple()
-    return 0 <= x <= a and 0 <= y <= b and 0 <= z <= c
+    return -1 <= x <= a and -1 <= y <= b and -1 <= z <= c
