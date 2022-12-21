@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
+from functools import cache
 from itertools import islice, product
 from typing import Any, Callable
 
@@ -58,14 +60,37 @@ class P:
         return points
 
 
-@dataclass(frozen=True, slots=True, eq=True, order=True)
+@dataclass(frozen=True, eq=True, order=True)
 class P3:
     x: int
     y: int
     z: int
 
+    def to_tuple(self) -> tuple[int, int, int]:
+        return self.x, self.y, self.z
+
     def add(self, p: P3) -> P3:
         return P3(self.x + p.x, self.y + p.y, self.z + p.z)
+
+    def sub(self, p: P3) -> P3:
+        return P3(self.x - p.x, self.y - p.y, self.z - p.z)
+
+    def distance(self, p: P3) -> float:
+        return math.sqrt(sum([x * x for x in p.sub(self).to_tuple()]))
+
+
+@cache
+def neighbors_3d(point: P3) -> set[P3]:
+    NEIGHBORS = {
+        P3(1, 0, 0),
+        P3(0, 1, 0),
+        P3(0, 0, 1),
+        P3(-1, 0, 0),
+        P3(0, -1, 0),
+        P3(0, 0, -1),
+    }
+    return {point.add(n) for n in NEIGHBORS}
+
 
 _NEIGHBORS = [P(0, -1), P(-1, 0), P(1, 0), P(0, 1)]
 _DIAG_NEIGHBORS = [
