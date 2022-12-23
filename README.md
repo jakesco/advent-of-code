@@ -27,6 +27,9 @@ $ python aoc <day> <input>
 * Day 16: [Proboscidea Volcanium](https://adventofcode.com/2022/day/16) | [solution](./aoc/solutions/day16.py)
 * Day 17: [Pyroclastic Flow](https://adventofcode.com/2022/day/17) | [solution](./aoc/solutions/day17.py)
 * Day 18: [Boiling Boulders](https://adventofcode.com/2022/day/18) | [solution](./aoc/solutions/day18.py)
+* Day 19: [Not Enough Minerals](https://adventofcode.com/2022/day/19) | solution
+* Day 20: [Grove Positioning System](https://adventofcode.com/2022/day/20) | [solution](./aoc/solutions/day20.py)
+* Day 21: [Monkey Math](https://adventofcode.com/2022/day/21) | solution
 
 
 ## Puzzle Input Tip
