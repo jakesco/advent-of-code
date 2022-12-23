@@ -45,3 +45,7 @@ Save the value of this `Cookie` header in `.token`. e.g.
 ```
 session=XXX
 ```
+I've added a `make` command for convenience:
+```
+$ make get-input day=<day>
+```
