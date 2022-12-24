@@ -1,6 +1,6 @@
 # AOC2022
 
-My solutions for Advent of Code 2022.
+My solutions for [Advent of Code 2022](https://adventofcode.com/2022).
 
 Run solutions by passing the day and puzzle input like so:
 ```
@@ -27,9 +27,11 @@ $ python aoc <day> <input>
 * Day 16: [Proboscidea Volcanium](https://adventofcode.com/2022/day/16) | [solution](./aoc/solutions/day16.py)
 * Day 17: [Pyroclastic Flow](https://adventofcode.com/2022/day/17) | [solution](./aoc/solutions/day17.py)
 * Day 18: [Boiling Boulders](https://adventofcode.com/2022/day/18) | [solution](./aoc/solutions/day18.py)
-* Day 19: [Not Enough Minerals](https://adventofcode.com/2022/day/19) | solution
+* Day 19: [Not Enough Minerals](https://adventofcode.com/2022/day/19) | [solution](./aoc/solutions/day19.py)
 * Day 20: [Grove Positioning System](https://adventofcode.com/2022/day/20) | [solution](./aoc/solutions/day20.py)
-* Day 21: [Monkey Math](https://adventofcode.com/2022/day/21) | solution
+* Day 21: [Monkey Math](https://adventofcode.com/2022/day/21) | [solution](./aoc/solutions/day21.py)
+* Day 22: [Monkey Map](https://adventofcode.com/2022/day/22) | [solution](./aoc/solutions/day22.py)
+* Day 23: [Unstable Diffusion](https://adventofcode.com/2022/day/23) | [solution](./aoc/solutions/day23.py)
 
 
 ## Puzzle Input Tip

@@ -22,8 +22,8 @@ class P:
     x: int
     y: int
 
-    def add(self, p: P) -> P:
-        return P(self.x + p.x, self.y + p.y)
+    def __add__(self, other):
+        return P(self.x + other.x, self.y + other.y)
 
     def diff(self, p: P) -> P:
         return P(self.x - p.x, self.y - p.y)
@@ -131,7 +131,7 @@ class Grid(dict):
         print(
             "\n".join(
                 [
-                    "".join([str(self.get(P(x, y), ".")) for x in x_range])
+                    "".join([str(self.get(P(x, y), " ")) for x in x_range])
                     for y in y_range
                 ]
             )
