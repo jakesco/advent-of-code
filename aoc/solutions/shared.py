@@ -119,11 +119,14 @@ class Grid(dict):
 
     @classmethod
     def from_lines(
-        cls, lines: list[str], convert: Callable[[str], Any] = int
+        cls, lines: list[str], convert: Callable[[str], Any] = int, skip: Any = None
     ) -> Grid[P, Any]:
         grid = cls()
         for y, line in enumerate(lines):
             for x, point in enumerate(line):
+                val = convert(point)
+                if skip and val == skip:
+                    continue
                 grid[P(x, y)] = convert(point)
         return grid
 
@@ -131,7 +134,7 @@ class Grid(dict):
         print(
             "\n".join(
                 [
-                    "".join([str(self.get(P(x, y), " ")) for x in x_range])
+                    "".join([str(self.get(P(x, y), ".")) for x in x_range])
                     for y in y_range
                 ]
             )
