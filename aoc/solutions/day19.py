@@ -1,17 +1,16 @@
 from __future__ import annotations
 
 import enum
+import math
 import re
+import time
 from collections import deque
-from collections.abc import Generator
 from dataclasses import dataclass
-from functools import cache, partial
-from pprint import pprint
-from typing import NewType
+from multiprocessing import Pool
 
 from .shared import Solution
 
-MAX_TICKS = 24
+MAX_TICKS = 20
 
 RESOURCES = ("ore", "clay", "obsidian")
 
@@ -62,37 +61,56 @@ class State:
     obsidian_bots: int = 0
     geode_bots: int = 0
 
+    def score(self, blueprint_number: int) -> int:
+        return blueprint_number * self.projected_geodes()
+
     def projected_geodes(self) -> int:
         return self.geodes + (self.geode_bots * self.ticks_left)
 
+    def finished(self) -> bool:
+        return self.ticks_left <= 0
+
     def finish(self) -> State:
-        return State(ticks_left=0, geodes=self.projected_geodes())
+        return State(
+            ticks_left=0,
+            ore=self.ore + (self.ore_bots * self.ticks_left),
+            clay=self.clay + (self.clay_bots * self.ticks_left),
+            obsidian=self.obsidian + (self.obsidian_bots * self.ticks_left),
+            geodes=self.geodes + (self.geode_bots * self.ticks_left),
+            ore_bots=self.ore_bots,
+            clay_bots=self.clay_bots,
+            obsidian_bots=self.obsidian_bots,
+            geode_bots=self.geode_bots,
+        )
 
 
 def main(input_: list[str]) -> Solution:
     blueprints = [Blueprint.from_input(line) for line in input_]
-    part1 = find_best_solution(blueprints[0])
-    sequence = [
-        Build.CLAY_BOT,
-        Build.CLAY_BOT,
-        Build.CLAY_BOT,
-        Build.OBSIDIAN_BOT,
-        Build.CLAY_BOT,
-        Build.OBSIDIAN_BOT,
-        Build.GEODE_BOT,
-        Build.GEODE_BOT,
-    ]
-    state = State()
-    for s in sequence:
-        pprint(state)
-        state = next_state(state, s, blueprints[0])
+    blueprints = [blueprints[0]]
+    with Pool() as pool:
+        scores = pool.map(find_best_solution, blueprints)
+    part1 = max(scores)
     return Solution(part1)
 
 
 def find_best_solution(blueprint: Blueprint) -> int:
     """DFS to find the best geode count for given blueprint."""
-    n = candidates(State(), blueprint)
-    return 0
+    # TODO: Limit search space more
+    stack = deque([State()])
+    discovered = set()
+    max_geodes = 0
+    while stack:
+        current = stack.pop()
+        # print(current)
+        if current in discovered:
+            continue
+        discovered.add(current)
+        for candidate in candidates(current, blueprint):
+            if candidate.finished():
+                max_geodes = max(max_geodes, candidate.geodes)
+            else:
+                stack.append(candidate)
+    return max_geodes * blueprint.number
 
 
 def candidates(state: State, blueprint: Blueprint) -> set[State]:
@@ -104,8 +122,7 @@ def candidates(state: State, blueprint: Blueprint) -> set[State]:
     return states
 
 
-@cache
-def next_state(state: State, build: Build, blueprint: Blueprint) -> State | None:
+def next_state(state: State, build: str, blueprint: Blueprint) -> State | None:
     """Generates next state based on build directive"""
     # Check that next state is possible
     cost = getattr(blueprint, build)
@@ -117,9 +134,11 @@ def next_state(state: State, build: Build, blueprint: Blueprint) -> State | None
     ):
         return None
 
-    ticks_required = max(
+    ticks_required = 1 + max(
         [
-            getattr(cost, r) - getattr(state, r) // getattr(state, f"{r}_bots")
+            math.ceil(
+                (getattr(cost, r) - getattr(state, r)) / getattr(state, f"{r}_bots")
+            )
             for r in RESOURCES
             if getattr(cost, r) > 0
         ]
