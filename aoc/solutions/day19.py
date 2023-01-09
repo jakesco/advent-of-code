@@ -2,18 +2,18 @@ from __future__ import annotations
 
 import enum
 import re
-import time
 from collections import deque
 from collections.abc import Generator
 from dataclasses import dataclass
-from functools import cache
-from itertools import combinations_with_replacement, islice, product
-from multiprocessing import Pool
+from functools import cache, partial
+from pprint import pprint
 from typing import NewType
 
 from .shared import Solution
 
 MAX_TICKS = 24
+
+RESOURCES = ("ore", "clay", "obsidian")
 
 
 class Build(enum.StrEnum):
@@ -21,182 +21,123 @@ class Build(enum.StrEnum):
     CLAY_BOT = "clay"
     OBSIDIAN_BOT = "obsidian"
     GEODE_BOT = "geode"
-    NOP = ""
-
-
-Sequence = NewType("Sequence", tuple[Build, ...])
 
 
 @dataclass(frozen=True, slots=True)
-class Resource:
+class Cost:
     ore: int = 0
     clay: int = 0
     obsidian: int = 0
-    geode: int = 0
-
-    @classmethod
-    def make(cls, bot: Build) -> Resource:
-        match bot:
-            case Build.ORE_BOT:
-                return cls(ore=1)
-            case Build.CLAY_BOT:
-                return cls(clay=1)
-            case Build.OBSIDIAN_BOT:
-                return cls(obsidian=1)
-            case Build.GEODE_BOT:
-                return cls(geode=1)
-            case _:
-                return cls()
-
-    def scalar(self, scalar: int) -> Resource:
-        return Resource(
-            self.ore * scalar,
-            self.clay * scalar,
-            self.obsidian * scalar,
-            self.geode * scalar,
-        )
-
-    def __add__(self, other: Resource) -> Resource:
-        return Resource(
-            self.ore + other.ore,
-            self.clay + other.clay,
-            self.obsidian + other.obsidian,
-            self.geode + other.geode,
-        )
-
-    def __sub__(self, other: Resource) -> Resource:
-        return Resource(
-            self.ore - other.ore,
-            self.clay - other.clay,
-            self.obsidian - other.obsidian,
-            self.geode - other.geode,
-        )
-
-    def __gt__(self, other: Resource) -> bool:
-        return (
-            self.ore > other.ore
-            and self.clay > other.clay
-            and self.obsidian > other.obsidian
-        )
-
-    def __ge__(self, other: Resource) -> bool:
-        return (
-            self.ore >= other.ore
-            and self.clay >= other.clay
-            and self.obsidian >= other.obsidian
-        )
-
-
-@dataclass(frozen=True, slots=True)
-class State:
-    ticks_left: int = MAX_TICKS
-    inventory: Resource = Resource()
-    production: Resource = Resource(ore=1)
 
 
 @dataclass(frozen=True, slots=True)
 class Blueprint:
     number: int
-    ore: Resource
-    clay: Resource
-    obsidian: Resource
-    geode: Resource
+    ore: Cost
+    clay: Cost
+    obsidian: Cost
+    geode: Cost
 
     @classmethod
     def from_input(cls, blueprint: str) -> Blueprint:
         numbers = map(int, re.findall(r"\d+", blueprint))
         return cls(
             number=next(numbers),
-            ore=Resource(ore=next(numbers)),
-            clay=Resource(ore=next(numbers)),
-            obsidian=Resource(ore=next(numbers), clay=next(numbers)),
-            geode=Resource(ore=next(numbers), obsidian=next(numbers)),
+            ore=Cost(ore=next(numbers)),
+            clay=Cost(ore=next(numbers)),
+            obsidian=Cost(ore=next(numbers), clay=next(numbers)),
+            geode=Cost(ore=next(numbers), obsidian=next(numbers)),
         )
+
+
+@dataclass(frozen=True, slots=True)
+class State:
+    ticks_left: int = MAX_TICKS
+    ore: int = 0
+    clay: int = 0
+    obsidian: int = 0
+    geodes: int = 0
+    ore_bots: int = 1
+    clay_bots: int = 0
+    obsidian_bots: int = 0
+    geode_bots: int = 0
+
+    def projected_geodes(self) -> int:
+        return self.geodes + (self.geode_bots * self.ticks_left)
+
+    def finish(self) -> State:
+        return State(ticks_left=0, geodes=self.projected_geodes())
 
 
 def main(input_: list[str]) -> Solution:
     blueprints = [Blueprint.from_input(line) for line in input_]
-    # sequence = Sequence(
-    #         (
-    #             Build.CLAY_BOT,
-    #             Build.CLAY_BOT,
-    #             Build.CLAY_BOT,
-    #             Build.OBSIDIAN_BOT,
-    #             Build.CLAY_BOT,
-    #             Build.OBSIDIAN_BOT,
-    #             Build.GEODE_BOT,
-    #             Build.GEODE_BOT,
-    #         )
-    #     )
-    part1 = find_best_sequence(blueprints[0])
+    part1 = find_best_solution(blueprints[0])
+    sequence = [
+        Build.CLAY_BOT,
+        Build.CLAY_BOT,
+        Build.CLAY_BOT,
+        Build.OBSIDIAN_BOT,
+        Build.CLAY_BOT,
+        Build.OBSIDIAN_BOT,
+        Build.GEODE_BOT,
+        Build.GEODE_BOT,
+    ]
+    state = State()
+    for s in sequence:
+        pprint(state)
+        state = next_state(state, s, blueprints[0])
     return Solution(part1)
 
 
-def find_best_sequence(blueprint: Blueprint) -> int:
+def find_best_solution(blueprint: Blueprint) -> int:
+    """DFS to find the best geode count for given blueprint."""
+    n = candidates(State(), blueprint)
+    return 0
+
+
+def candidates(state: State, blueprint: Blueprint) -> set[State]:
+    """Returns next possible states"""
     states = set()
-    skip = False
-    sequences = iter_sequences()
-    sequences.send(None)
-    while True:
-        try:
-            sequence = sequences.send(skip)
-        except StopIteration:
-            break
-        if state := eval_sequence(blueprint, sequence, State()):
-            skip = False
-            states.add(state)
-        else:
-            skip = True
-    return max([state.inventory.geode for state in states])
-
-
-def iter_sequences() -> Generator[Sequence]:
-    q = {(build,) for build in Build.__members__.values()}
-    i = 0
-    while q:
-        prefix = q.pop()
-        for action in Build.__members__.values():
-            seq = (*prefix, action)
-            skip = yield seq
-            if skip or len(seq) > MAX_TICKS:
-                continue
-            i += 1
-            print(i, len(seq), seq)
-            q.add(seq)
+    for directive in Build:
+        if new_state := next_state(state, directive, blueprint):
+            states.add(new_state)
+    return states
 
 
 @cache
-def eval_sequence(
-    blueprint: Blueprint, sequence: Sequence, state: State
-) -> State | None:
-    if len(sequence) <= 0 or state is None:
-        return state
-    action = sequence[0]
-    new_state = tick(blueprint, state, action)
-    return eval_sequence(blueprint, sequence[1:], new_state)
-
-
-def tick(blueprint: Blueprint, state: State, build: Build) -> State | None:
-    ticks = ticks_required(blueprint, state, build)
-    cost = getattr(blueprint, build, Resource())
-
-    if not can_build(ticks, cost, state):
+def next_state(state: State, build: Build, blueprint: Blueprint) -> State | None:
+    """Generates next state based on build directive"""
+    # Check that next state is possible
+    cost = getattr(blueprint, build)
+    if any(
+        [
+            getattr(cost, resource) > 0 and getattr(state, f"{resource}_bots") < 1
+            for resource in RESOURCES
+        ]
+    ):
         return None
 
-    # Gather resources
-    inventory = state.inventory + state.production.scalar(ticks)
+    ticks_required = max(
+        [
+            getattr(cost, r) - getattr(state, r) // getattr(state, f"{r}_bots")
+            for r in RESOURCES
+            if getattr(cost, r) > 0
+        ]
+    )
 
-    # Do build
-    inventory = inventory - getattr(blueprint, build, Resource())
-    production = state.production + Resource.make(build)
+    if ticks_required > state.ticks_left:
+        return state.finish()
 
-    return State(inventory, production)
-
-
-def ticks_required(blueprint: Blueprint, state: State, build: Build) -> int:
-    # TODO
-    pass
-
-
-def can_build(ticks: int, cost: Resource, state: State) -> bool:
-    return ticks <= state.ticks_left and state.inventory - cost >= Resource()
+    return State(
+        ticks_left=state.ticks_left - ticks_required,
+        ore=state.ore + (state.ore_bots * ticks_required) - cost.ore,
+        clay=state.clay + (state.clay_bots * ticks_required) - cost.clay,
+        obsidian=state.obsidian
+        + (state.obsidian_bots * ticks_required)
+        - cost.obsidian,
+        geodes=state.geodes + (state.geode_bots * ticks_required),
+        ore_bots=state.ore_bots + (1 if build == Build.ORE_BOT else 0),
+        clay_bots=state.clay_bots + (1 if build == Build.CLAY_BOT else 0),
+        obsidian_bots=state.obsidian_bots + (1 if build == Build.OBSIDIAN_BOT else 0),
+        geode_bots=state.geode_bots + (1 if build == Build.GEODE_BOT else 0),
+    )
