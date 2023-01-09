@@ -3,6 +3,7 @@ from __future__ import annotations
 import enum
 import math
 import re
+import time
 from collections import deque
 from dataclasses import dataclass
 from multiprocessing import Pool
@@ -60,12 +61,6 @@ class State:
     obsidian_bots: int = 0
     geode_bots: int = 0
 
-    def score(self, blueprint_number: int) -> int:
-        return blueprint_number * self.projected_geodes()
-
-    def projected_geodes(self) -> int:
-        return self.geodes + (self.geode_bots * self.ticks_left)
-
     def finished(self) -> bool:
         return self.ticks_left <= 0
 
@@ -84,43 +79,47 @@ class State:
 
 
 def main(input_: list[str]) -> Solution:
+    part1 = part2 = 0
     blueprints = [Blueprint.from_input(line) for line in input_]
     with Pool() as pool:
-        scores = pool.map(find_best_solution, blueprints)
+        scores = pool.map(find_best_solution, [blueprints[0]])
     part1 = sum(scores)
-    return Solution(part1)
+    return Solution(part1, part2)
 
 
 def find_best_solution(blueprint: Blueprint) -> int:
     """DFS to find the best geode count for given blueprint."""
+    start = time.perf_counter()
     checked = removed = 0
     stack = deque([State()])
     discovered = set()
-    max_geodes = 0
+    best_so_far = 0
     while stack:
         current = stack.pop()
         if current in discovered:
             continue
         discovered.add(current)
+        if early_abort(current, blueprint, best_so_far):
+            removed += 1
+            continue
         for candidate in candidates(current, blueprint):
             checked += 1
             if candidate.finished():
-                max_geodes = max(max_geodes, candidate.geodes)
-            elif abort(candidate, blueprint):
-                removed += 1
-                continue
+                best_so_far = max(best_so_far, candidate.geodes)
             else:
                 stack.append(candidate)
-    print(f"Search Done {blueprint.number}: {max_geodes} ({checked} - {removed})")
-    return max_geodes * blueprint.number
+    end = time.perf_counter()
+    print(f"Search Done {blueprint.number}: {best_so_far} ({checked} - {removed})")
+    print(f"Search Time: {end - start}s")
+    return best_so_far * blueprint.number
 
 
-def candidates(state: State, blueprint: Blueprint) -> set[State]:
+def candidates(state: State, blueprint: Blueprint) -> list[State]:
     """Returns next possible states"""
-    states = set()
+    states = list()
     for directive in Build:
         if new_state := next_state(state, directive, blueprint):
-            states.add(new_state)
+            states.append(new_state)
     return states
 
 
@@ -164,10 +163,23 @@ def next_state(state: State, build: str, blueprint: Blueprint) -> State | None:
     )
 
 
-def abort(state: State, blueprint: Blueprint) -> bool:
+def early_abort(state: State, blueprint: Blueprint, current_best: int) -> bool:
     """Basic ideas for early abort"""
     # TODO: Better heuristics to limit search space
     if state.obsidian_bots == 0 and blueprint.geode.obsidian > state.ticks_left:
+        # Can't get enough obsidian to build geode bot in ticks left
         return True
-    if state.ore_bots > 5 or state.clay_bots > 5:
+    if prefect_projected_geodes(state) < current_best:
+        # Can't possibly get more geodes than current best
         return True
+    return False
+
+
+def prefect_projected_geodes(state: State) -> int:
+    """End number of geodes assuming a geode bot is built every tick"""
+    additional = 0
+    bots = state.geode_bots
+    for _ in range(state.ticks_left):
+        additional += bots
+        bots += 1
+    return state.geodes + additional
