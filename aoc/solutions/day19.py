@@ -3,14 +3,13 @@ from __future__ import annotations
 import enum
 import math
 import re
-import time
 from collections import deque
 from dataclasses import dataclass
 from multiprocessing import Pool
 
 from .shared import Solution
 
-MAX_TICKS = 20
+MAX_TICKS = 24
 
 RESOURCES = ("ore", "clay", "obsidian")
 
@@ -86,30 +85,33 @@ class State:
 
 def main(input_: list[str]) -> Solution:
     blueprints = [Blueprint.from_input(line) for line in input_]
-    blueprints = [blueprints[0]]
     with Pool() as pool:
         scores = pool.map(find_best_solution, blueprints)
-    part1 = max(scores)
+    part1 = sum(scores)
     return Solution(part1)
 
 
 def find_best_solution(blueprint: Blueprint) -> int:
     """DFS to find the best geode count for given blueprint."""
-    # TODO: Limit search space more
+    checked = removed = 0
     stack = deque([State()])
     discovered = set()
     max_geodes = 0
     while stack:
         current = stack.pop()
-        # print(current)
         if current in discovered:
             continue
         discovered.add(current)
         for candidate in candidates(current, blueprint):
+            checked += 1
             if candidate.finished():
                 max_geodes = max(max_geodes, candidate.geodes)
+            elif abort(candidate, blueprint):
+                removed += 1
+                continue
             else:
                 stack.append(candidate)
+    print(f"Search Done {blueprint.number}: {max_geodes} ({checked} - {removed})")
     return max_geodes * blueprint.number
 
 
@@ -160,3 +162,12 @@ def next_state(state: State, build: str, blueprint: Blueprint) -> State | None:
         obsidian_bots=state.obsidian_bots + (1 if build == Build.OBSIDIAN_BOT else 0),
         geode_bots=state.geode_bots + (1 if build == Build.GEODE_BOT else 0),
     )
+
+
+def abort(state: State, blueprint: Blueprint) -> bool:
+    """Basic ideas for early abort"""
+    # TODO: Better heuristics to limit search space
+    if state.obsidian_bots == 0 and blueprint.geode.obsidian > state.ticks_left:
+        return True
+    if state.ore_bots > 5 or state.clay_bots > 5:
+        return True
