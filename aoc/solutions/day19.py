@@ -78,7 +78,14 @@ class State:
     def finish(self) -> State:
         return State(
             ticks_left=0,
+            ore=self.ore + (self.ore_bots * self.ticks_left),
+            clay=self.clay + (self.clay_bots * self.ticks_left),
+            obsidian=self.obsidian + (self.obsidian_bots * self.ticks_left),
             geodes=self.geodes + (self.geode_bots * self.ticks_left),
+            ore_bots=self.ore_bots,
+            clay_bots=self.clay_bots,
+            obsidian_bots=self.obsidian_bots,
+            geode_bots=self.geode_bots,
         )
 
 
@@ -86,12 +93,13 @@ def main(input_: list[str]) -> Solution:
     # TODO: bug with geode counting simulation
     part1 = part2 = 0
     blueprints = [Blueprint.from_input(line) for line in input_]
-    with Pool() as pool:
-        scores = pool.map(find_best_solution, blueprints)
-    part1 = sum([a.number * b for a, b in zip(blueprints, scores)])
-    with Pool() as pool:
-        scores = pool.map(partial(find_best_solution, initial_ticks=32), blueprints[:3])
-    part2 = reduce(lambda a, b: a * b, scores, 1)  # 47,495 High
+    test(blueprints[0])
+    # with Pool() as pool:
+    #     scores = pool.map(find_best_solution, [blueprints[1]])
+    # part1 = sum([a.number * b for a, b in zip(blueprints, scores)])
+    # with Pool() as pool:
+    #     scores = pool.map(partial(find_best_solution, initial_ticks=32), blueprints[:3])
+    # part2 = reduce(lambda a, b: a * b, scores, 1)  # 47,495 High
     return Solution(part1, part2)
 
 
@@ -182,3 +190,37 @@ def prefect_projected_geodes(state: State) -> int:
         additional += bots
         bots += 1
     return state.geodes + additional
+
+
+def test(blueprint: Blueprint):
+    steps = (
+        Build.ORE_BOT,
+        Build.CLAY_BOT,
+        Build.CLAY_BOT,
+        Build.CLAY_BOT,
+        Build.CLAY_BOT,
+        Build.CLAY_BOT,
+        Build.CLAY_BOT,
+        Build.CLAY_BOT,
+        Build.OBSIDIAN_BOT,
+        Build.OBSIDIAN_BOT,
+        Build.OBSIDIAN_BOT,
+        Build.OBSIDIAN_BOT,
+        Build.GEODE_BOT,
+        Build.OBSIDIAN_BOT,
+        Build.GEODE_BOT,
+        Build.GEODE_BOT,
+        Build.GEODE_BOT,
+        Build.GEODE_BOT,
+        Build.GEODE_BOT,
+        Build.GEODE_BOT,
+        Build.GEODE_BOT,
+        Build.GEODE_BOT,
+    )
+    state = State(ticks_left=32)
+    for s in steps:
+        state = next_state(state, s, blueprint)
+        print(f"\n== Min: {32 - state.ticks_left} ==")
+        print(state)
+    print(f"\n== Min: 32 ==")
+    print(state.finish())
