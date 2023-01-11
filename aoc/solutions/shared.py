@@ -22,8 +22,11 @@ class P:
     x: int
     y: int
 
-    def __add__(self, other):
+    def __add__(self, other: P):
         return P(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other: P):
+        return P(self.x - other.x, self.y - other.y)
 
     def diff(self, p: P) -> P:
         return P(self.x - p.x, self.y - p.y)

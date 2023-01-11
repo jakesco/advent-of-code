@@ -29,6 +29,7 @@ def main(input_: list[str]) -> Solution:
         run_round(grid)
         grid.render_graph(range(-5, 10), range(-5, 10))
 
+    print(score(grid))
     return Solution()
 
 
@@ -58,3 +59,12 @@ def neighbors(point: P) -> Iterator[tuple[P, P, P]]:
 def execute_move(move: Move, grid: Grid):
     del grid[move.elf]
     grid[move.dest] = "#"
+
+
+def score(grid: Grid) -> int:
+    min_x = min(grid, key=lambda p: p.x).x
+    max_x = max(grid, key=lambda p: p.x).x
+    min_y = min(grid, key=lambda p: p.y).y
+    max_y = max(grid, key=lambda p: p.y).y
+    size = (max_x - min_x) * (max_y - min_y)
+    return size - len(grid)
