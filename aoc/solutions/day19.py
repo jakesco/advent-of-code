@@ -3,7 +3,6 @@ from __future__ import annotations
 import enum
 import math
 import re
-import time
 from collections import deque
 from dataclasses import dataclass
 from functools import partial, reduce
@@ -90,22 +89,19 @@ class State:
 
 
 def main(input_: list[str]) -> Solution:
-    # TODO: bug with geode counting simulation
-    part1 = part2 = 0
     blueprints = [Blueprint.from_input(line) for line in input_]
-    test(blueprints[0])
-    # with Pool() as pool:
-    #     scores = pool.map(find_best_solution, [blueprints[1]])
-    # part1 = sum([a.number * b for a, b in zip(blueprints, scores)])
-    # with Pool() as pool:
-    #     scores = pool.map(partial(find_best_solution, initial_ticks=32), blueprints[:3])
-    # part2 = reduce(lambda a, b: a * b, scores, 1)  # 47,495 High
+    with Pool() as pool:
+        scores = pool.map(find_best_solution, blueprints)
+    part1 = sum([a.number * b for a, b in zip(blueprints, scores)])
+    with Pool() as pool:
+        scores = pool.map(partial(find_best_solution, initial_ticks=32), blueprints[:3])
+    part2 = reduce(lambda a, b: a * b, scores, 1)
     return Solution(part1, part2)
 
 
 def find_best_solution(blueprint: Blueprint, initial_ticks: int = MAX_TICKS) -> int:
     """DFS to find the best geode count for given blueprint."""
-    start = time.perf_counter()
+    # start = time.perf_counter()
     stack = deque([State(ticks_left=initial_ticks)])
     discovered = set()
     best_so_far = 0
@@ -122,8 +118,8 @@ def find_best_solution(blueprint: Blueprint, initial_ticks: int = MAX_TICKS) -> 
                 best_so_far = max(best_so_far, candidate.geodes)
             else:
                 stack.append(candidate)
-    end = time.perf_counter()
-    print(f"Search Done {blueprint.number}: {best_so_far} ({end - start:.2f}s)")
+    # end = time.perf_counter()
+    # print(f"Search Done {blueprint.number}: {best_so_far} ({end - start:.2f}s)")
     return best_so_far
 
 
@@ -163,6 +159,7 @@ def next_state(state: State, build: str, blueprint: Blueprint) -> State | None:
             if getattr(cost, r) > 0
         ]
     )
+    ticks_required = max(1, ticks_required)
 
     if ticks_required >= state.ticks_left:
         return state.finish()
@@ -190,37 +187,3 @@ def prefect_projected_geodes(state: State) -> int:
         additional += bots
         bots += 1
     return state.geodes + additional
-
-
-def test(blueprint: Blueprint):
-    steps = (
-        Build.ORE_BOT,
-        Build.CLAY_BOT,
-        Build.CLAY_BOT,
-        Build.CLAY_BOT,
-        Build.CLAY_BOT,
-        Build.CLAY_BOT,
-        Build.CLAY_BOT,
-        Build.CLAY_BOT,
-        Build.OBSIDIAN_BOT,
-        Build.OBSIDIAN_BOT,
-        Build.OBSIDIAN_BOT,
-        Build.OBSIDIAN_BOT,
-        Build.GEODE_BOT,
-        Build.OBSIDIAN_BOT,
-        Build.GEODE_BOT,
-        Build.GEODE_BOT,
-        Build.GEODE_BOT,
-        Build.GEODE_BOT,
-        Build.GEODE_BOT,
-        Build.GEODE_BOT,
-        Build.GEODE_BOT,
-        Build.GEODE_BOT,
-    )
-    state = State(ticks_left=32)
-    for s in steps:
-        state = next_state(state, s, blueprint)
-        print(f"\n== Min: {32 - state.ticks_left} ==")
-        print(state)
-    print(f"\n== Min: 32 ==")
-    print(state.finish())
