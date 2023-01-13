@@ -13,7 +13,7 @@ RE_NUMBER = re.compile(r"^(?P<name>[a-z]+): (?P<num>\d+)$")
 
 # Ops also hold their inverse, makes part 2 easier.
 OPS = {
-    "+": (lambda x, y: x + y, lambda z, x: z - x, lambda z, y: y - z),
+    "+": (lambda x, y: x + y, lambda z, x: z - x, lambda z, y: z - y),
     "-": (lambda x, y: x - y, lambda z, x: x - z, lambda z, y: z + y),
     "*": (lambda x, y: x * y, lambda z, x: z // x, lambda z, y: z // y),
     "/": (lambda x, y: x // y, lambda z, x: x // z, lambda z, y: z * y),
@@ -34,7 +34,7 @@ class Leaf:
 @dataclass
 class Node:
     name: str
-    op: tuple[Callable[[int, int], int], Callable[[int, int], int]]
+    op: tuple[Callable[[int, int], int], ...]
     left: Node | Leaf | str = None
     right: Node | Leaf | str = None
 
