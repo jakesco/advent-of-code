@@ -137,7 +137,7 @@ class Grid(dict):
         print(
             "\n".join(
                 [
-                    "".join([str(self.get(P(x, y), ".")) for x in x_range])
+                    "".join([str(self.get(P(x, y), " ")) for x in x_range])
                     for y in y_range
                 ]
             )

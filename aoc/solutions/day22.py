@@ -42,7 +42,6 @@ def traverse(
     current = min([p for p in grid.keys() if p.y == 0])
     get_wrap = get_wrap_cube if cube else get_wrap_plane
     for idx, action in enumerate(password, start=1):
-        print(current)
         if idx % 2 == 0:
             FACING.rotate(action)
             continue
