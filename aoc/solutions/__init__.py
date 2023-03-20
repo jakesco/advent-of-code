@@ -32,6 +32,7 @@ def _find_solutions() -> dict[int, Callable[[list[str]], Solution]]:
     """
     solution_map = dict()
     for pkg in pkgutil.iter_modules(find_spec(__name__).submodule_search_locations):
+        print(pkg)
         if match := SOLUTION_REGEX.fullmatch(pkg.name):
             module = import_module(f".{pkg.name}", package=__name__)
             day = int(match.group("day"))
