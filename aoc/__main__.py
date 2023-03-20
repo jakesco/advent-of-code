@@ -10,13 +10,14 @@ parser = argparse.ArgumentParser(
     description="Solutions for Advent of Code 2022",
 )
 
+parser.add_argument("year", type=int, help="Solution year to run, between 2015 and 2022.")
 parser.add_argument("day", type=int, help="Solution day to run, between 1 and 25.")
 parser.add_argument("filename", type=Path, help="Path to puzzle input file.")
 
 args = parser.parse_args()
 
 try:
-    solution = solve(args.day, args.filename)
+    solution = solve(args.year, args.day, args.filename)
     print(solution)
 except FileNotFoundError as e:
     sys.stderr.write("aoc: error: %s\n" % e)

@@ -1,20 +1,10 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import cache
-from itertools import islice, product
+from itertools import product
 from typing import Any, Callable
-
-
-@dataclass
-class Solution:
-    part1: int | str = 0
-    part2: int | str = 0
-
-    def __str__(self):
-        return f"Part 1: {self.part1}\nPart 2: {self.part2}"
 
 
 @dataclass(frozen=True, slots=True, order=True)
@@ -174,14 +164,3 @@ class Grid(dict):
         return any(n is None for n in neigh.values())
 
 
-def batched(iterable, n):
-    """
-    Batch data into lists of length n. The last batch may be shorter.
-    Recipe from https://docs.python.org/3/library/itertools.html#itertools-recipes
-    """
-    # batched('ABCDEFG', 3) --> ABC DEF G
-    if n < 1:
-        raise ValueError("n must be at least one")
-    it = iter(iterable)
-    while batch := list(islice(it, n)):
-        yield batch

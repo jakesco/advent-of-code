@@ -1,6 +1,7 @@
 from collections import defaultdict
 
-from aoc.solutions.shared import Solution
+from aoc.utils.interfaces import Solution
+
 
 def main(input_: list[str]) -> Solution:
     elf = 0
