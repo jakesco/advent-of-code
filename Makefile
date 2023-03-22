@@ -1,5 +1,5 @@
 fix:
-	ruff aoc/ && black aoc/
+	black aoc/ && ruff aoc/ --fix
 
 new:
 	python aoc --download $(year) $(day) & \

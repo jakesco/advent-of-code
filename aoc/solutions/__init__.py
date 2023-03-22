@@ -22,8 +22,8 @@ def solve(year: int, day: int, filename: Path) -> Solution:
 
 
 def _find_solution(year: int, day: int) -> Callable[[list[str]], Solution]:
-    """Walks `solutions` package directory finding all modules with a name like _year.dayXX.
-    Will then find the `main` function for the specified year and day.
+    """Walks `solutions` package directory finding all modules with a name like
+    _year.dayXX. Will then find the `main` function for the specified year and day.
     """
     solution_module = _find_solution_year(year)
     for pkg in pkgutil.iter_modules(

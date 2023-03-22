@@ -19,7 +19,7 @@ parser.add_argument("day", type=int, help="solution day to run, between 1 and 25
 parser.add_argument(
     "filename",
     type=Path,
-    help="path to puzzle input file. (If no path given, puzzle input will be downloaded.)",
+    help="path to puzzle input file. (If no path given, puzzle input will be downloaded.)",  # noqa: E501
     nargs="?",
     default=None,
 )

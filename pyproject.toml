@@ -20,5 +20,22 @@ dev = [
     "ruff",
 ]
 
-[tools.ruff]
-select = ["I"]
+[tool.ruff]
+select = [
+    "F",
+    "E",
+    "W",
+    "I001",
+]
+ignore = [
+    "E741",
+    "E731",
+]
+src = ["src", "tests"]
+target-version = "py311"
+
+[tool.ruff.isort]
+known-first-party = ["aoc"]
+
+[tool.ruff.mccabe]
+max-complexity = 10
