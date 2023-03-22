@@ -13,6 +13,7 @@ $ python aoc <year> <day> <input>
 <summary>2015</summary>
 
 * Day 01: [Not Quite Lisp](https://adventofcode.com/2015/day/1) | [solution](./aoc/solutions/_2015/day01.py)
+* Day 02: [I Was Told There Would Be No Math](https://adventofcode.com/2015/day/2) | [solution](./aoc/solutions/_2015/day02.py)
 
 </details>
 
