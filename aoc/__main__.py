@@ -5,22 +5,42 @@ from pathlib import Path
 
 from solutions import solve
 
+from aoc.utils.downloader import cache_puzzle_input
+
 parser = argparse.ArgumentParser(
     prog="aoc",
-    description="Solutions for Advent of Code 2022",
+    description="Solutions for Advent of Code",
 )
 
 parser.add_argument(
-    "year", type=int, help="Solution year to run, between 2015 and 2022."
+    "year", type=int, help="solution year to run, between 2015 and 2022."
 )
-parser.add_argument("day", type=int, help="Solution day to run, between 1 and 25.")
-parser.add_argument("filename", type=Path, help="Path to puzzle input file.")
+parser.add_argument("day", type=int, help="solution day to run, between 1 and 25.")
+parser.add_argument(
+    "filename", type=Path, help="path to puzzle input file. (If no path given, puzzle input will be downloaded.)", nargs="?", default=None
+)
+parser.add_argument(
+    "-d",
+    "--download",
+    action="store_true",
+    default=False,
+    help="download puzzle input only, without running puzzle solution.",
+)
 
 args = parser.parse_args()
 
 try:
-    solution = solve(args.year, args.day, args.filename)
+    if args.download:
+        cache_puzzle_input(args.year, args.day)
+        sys.exit(0)
+
+    filename = args.filename
+    if filename is None:
+        filename = cache_puzzle_input(args.year, args.day)
+
+    solution = solve(args.year, args.day, filename)
     print(solution)
+
 except FileNotFoundError as e:
     sys.stderr.write("aoc: error: %s\n" % e)
     sys.exit(1)

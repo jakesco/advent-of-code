@@ -135,4 +135,4 @@ dmypy.json
 .token
 
 # Don't publish inputs
-*.txt
+.input/

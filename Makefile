@@ -1,12 +1,11 @@
 fix:
 	ruff aoc/ && black aoc/
 
-get-input:
-	[ -n "$(day)" ] && \
-	curl "https://adventofcode.com/2022/day/$(day)/input" \
-		--header "Cookie: $$(cat .token)" > input.txt
+new:
+	python aoc --download $(year) $(day) & \
+	cp -n aoc/solutions/template.py aoc/solutions/_$(year)/day$(day).py
 
 install:
 	pip install -r requirements.txt -e .
 
-.PHONY: get-input fmt install
+.PHONY: new fix install
