@@ -2,10 +2,16 @@
 
 My solutions for [Advent of Code](https://adventofcode.com).
 
-Run solutions by passing the day and puzzle input like so:
+Run solutions by passing the year, day and puzzle input like so:
 ```
-$ python aoc <year> <day> <input>
+$ python aoc <year> <day> [input]
 ```
+
+If no input is provided, and you have a `.token` file in the root 
+of the project, the script will attempt to automatically download 
+your puzzle input from the Advent of Code website. Steps to get 
+your session token are in the [Puzzle Input Tip](#puzzle-input-tip) 
+section below.
 
 ## Solutions
 
@@ -57,9 +63,5 @@ You can find your session token by looking at the `Cookie` header in the network
 in your browser tools when navigating to https://adventofcode.com/2022/day/1/input.
 Save the value of this `Cookie` header in `.token`. e.g.
 ```
-session=XXX
-```
-I've added a `make` command for convenience:
-```
-$ make get-input day=<day>
+session=XXXX
 ```
