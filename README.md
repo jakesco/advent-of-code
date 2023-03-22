@@ -21,6 +21,7 @@ section below.
 * Day 01: [Not Quite Lisp](https://adventofcode.com/2015/day/1) | [solution](./aoc/solutions/_2015/day01.py)
 * Day 02: [I Was Told There Would Be No Math](https://adventofcode.com/2015/day/2) | [solution](./aoc/solutions/_2015/day02.py)
 * Day 03: [Perfectly Spherical Houses in a Vacuum](https://adventofcode.com/2015/day/3) | [solution](./aoc/solutions/_2015/day03.py)
+* Day 04: [The Ideal Stocking Stuffer](https://adventofcode.com/2015/day/4) | [solution](./aoc/solutions/_2015/day04.py)
 
 </details>
 
