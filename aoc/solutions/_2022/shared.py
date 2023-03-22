@@ -162,5 +162,3 @@ class Grid(dict):
     def is_edge(self, p: P) -> bool:
         neigh = self.neighbors(p, diag=True)
         return any(n is None for n in neigh.values())
-
-

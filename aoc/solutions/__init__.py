@@ -1,15 +1,10 @@
 import pkgutil
-import re
 from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
 from typing import Callable
 
 from aoc.utils.interfaces import Solution
-
-from ._2022.day01 import main
-
-SOLUTION_REGEX = re.compile(r"day(?P<day>\d+)")
 
 
 def solve(year: int, day: int, filename: Path) -> Solution:
@@ -31,9 +26,13 @@ def _find_solution(year: int, day: int) -> Callable[[list[str]], Solution]:
     Will then find the `main` function for the specified year and day.
     """
     solution_module = _find_solution_year(year)
-    for pkg in pkgutil.iter_modules(find_spec(f"{__name__}.{solution_module.name}").submodule_search_locations):
+    for pkg in pkgutil.iter_modules(
+        find_spec(f"{__name__}.{solution_module.name}").submodule_search_locations
+    ):
         if f"{day:02}" in pkg.name:
-            module = import_module(f".{solution_module.name}.{pkg.name}", package=__name__)
+            module = import_module(
+                f".{solution_module.name}.{pkg.name}", package=__name__
+            )
             return getattr(module, "main")
     raise IndexError("solution not implemented for day %s" % day)
 
@@ -43,4 +42,4 @@ def _find_solution_year(year: int) -> pkgutil.ModuleInfo:
     for pkg in pkgutil.iter_modules(find_spec(__name__).submodule_search_locations):
         if str(year) in pkg.name:
             return pkg
-    raise IndexError(f"no solutions implemented for %s" % year)
+    raise IndexError("no solutions implemented for %s" % year)

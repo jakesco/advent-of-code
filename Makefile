@@ -1,5 +1,5 @@
-fmt:
-	isort aoc/ && black aoc/
+fix:
+	ruff aoc/ && black aoc/
 
 get-input:
 	[ -n "$(day)" ] && \

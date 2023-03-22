@@ -14,7 +14,6 @@ class Move:
 
 
 def main(input_: list[str]) -> Solution:
-
     split = input_.index("")
     crates = input_[:split]
     moves = input_[split + 1 :]

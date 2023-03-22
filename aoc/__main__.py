@@ -10,7 +10,9 @@ parser = argparse.ArgumentParser(
     description="Solutions for Advent of Code 2022",
 )
 
-parser.add_argument("year", type=int, help="Solution year to run, between 2015 and 2022.")
+parser.add_argument(
+    "year", type=int, help="Solution year to run, between 2015 and 2022."
+)
 parser.add_argument("day", type=int, help="Solution day to run, between 1 and 25.")
 parser.add_argument("filename", type=Path, help="Path to puzzle input file.")
 
