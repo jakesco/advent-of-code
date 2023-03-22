@@ -20,7 +20,7 @@ section below.
 
 * Day 01: [Not Quite Lisp](https://adventofcode.com/2015/day/1) | [solution](./aoc/solutions/_2015/day01.py)
 * Day 02: [I Was Told There Would Be No Math](https://adventofcode.com/2015/day/2) | [solution](./aoc/solutions/_2015/day02.py)
-* Day 03: [Perfectly Spherical Houses in a Vacuum](https://adventofcode.com/3015/day/3) | [solution](./aoc/solutions/_3015/day03.py)
+* Day 03: [Perfectly Spherical Houses in a Vacuum](https://adventofcode.com/2015/day/3) | [solution](./aoc/solutions/_2015/day03.py)
 
 </details>
 
