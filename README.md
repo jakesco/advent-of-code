@@ -24,6 +24,7 @@ section below.
 * Day 04: [The Ideal Stocking Stuffer](https://adventofcode.com/2015/day/4) | [solution](./aoc/solutions/_2015/day04.py)
 * Day 05: [Doesn't He Have Intern-Elves For This?](https://adventofcode.com/2015/day/5) | [solution](./aoc/solutions/_2015/day05.py)
 * Day 06: [Probably a Fire Hazard](https://adventofcode.com/2015/day/6) | [solution](./aoc/solutions/_2015/day06.py)
+* Day 07: [Some Assembly Required](https://adventofcode.com/2015/day/7) | [solution](./aoc/solutions/_2015/day07.py)
 
 </details>
 
