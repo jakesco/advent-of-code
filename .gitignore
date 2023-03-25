@@ -139,3 +139,6 @@ dmypy.json
 
 # Don't publish inputs
 .input/
+
+# test files
+test.txt
