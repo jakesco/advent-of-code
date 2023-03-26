@@ -1,5 +1,6 @@
 import enum
 import re
+import time
 from dataclasses import dataclass
 
 from aoc.utils.interfaces import Solution
@@ -32,9 +33,7 @@ class Connection:
 def main(puzzle_input: list[str]) -> Solution:
     connections = [parse_connection(line) for line in puzzle_input]
     result = run_simulation(connections)
-    part1 = "a"
-    while isinstance(part1, str):
-        part1 = result[part1]
+    part1 = result["a"]
 
     return Solution(part1)
 
@@ -45,22 +44,19 @@ def run_simulation(connections: list[Connection]) -> dict[str, int]:
     while connections:
         conn = connections.pop(0)
         print(f"Processing {conn}")
-        print(f"State {results}", len(connections))
+        print(f"State: {results}")
+
 
         if conn.gate_type == GateType.ASSIGN:
             results[conn.out] = conn.in1
             continue
 
-        if isinstance(conn.in1, str) and results.get(conn.in1) is None:
+        operand1 = follow_connection(results, conn.in1)
+        operand2 = follow_connection(results, conn.in2)
+
+        if operand1 is None or operand2 is None:
             connections.append(conn)
             continue
-
-        if isinstance(conn.in2, str) and results.get(conn.in2) is None:
-            connections.append(conn)
-            continue
-
-        operand1 = conn.in1 if isinstance(conn.in1, int) else results[conn.in1]
-        operand2 = conn.in2 if isinstance(conn.in2, int) else results[conn.in2]
 
         match conn.gate_type:
             case GateType.NOT:
@@ -123,8 +119,22 @@ def parse_connection(string: str) -> Connection:
     raise ValueError(f"Unknown connection type {string}")
 
 
+def follow_connection(state: dict[str, int], start_node: str) -> int | None:
+    """Follows a connection until it reaches a number"""
+    while isinstance(start_node, str):
+        start_node = state.get(start_node, None)
+    return start_node
+
+
 def try_int(string: str) -> int | str:
     try:
         return int(string)
     except ValueError:
         return string
+
+
+def rewire(connections: list[Connection]) -> list[Connection]:
+    for conn in connections:
+        if conn.gate_type == GateType.ASSIGN and conn.out == "a":
+            conn.out = "b"
+    return connections

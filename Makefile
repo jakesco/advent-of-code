@@ -1,7 +1,7 @@
 VENV_PYTHON := ./venv/bin/python
 
 fix: venv
-	$(VENV_PYTHON) -m black aoc/ && $(VENV_PYTHON) -m ruff aoc/ --fix
+	$(VENV_PYTHON) -m black aoc/ tests/ && $(VENV_PYTHON) -m ruff aoc/ tests/ --fix
 
 new: venv
 	$(VENV_PYTHON) aoc --download $(year) $(day) &
