@@ -25,6 +25,7 @@ section below.
 * Day 05: [Doesn't He Have Intern-Elves For This?](https://adventofcode.com/2015/day/5) | [solution](./aoc/solutions/_2015/day05.py)
 * Day 06: [Probably a Fire Hazard](https://adventofcode.com/2015/day/6) | [solution](./aoc/solutions/_2015/day06.py)
 * Day 07: [Some Assembly Required](https://adventofcode.com/2015/day/7) | [solution](./aoc/solutions/_2015/day07.py)
+* Day 08: [Matchsticks](https://adventofcode.com/2015/day/8) | [solution](./aoc/solutions/_2015/day08.py)
 
 </details>
 
