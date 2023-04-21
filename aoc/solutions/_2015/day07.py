@@ -1,6 +1,5 @@
 import enum
 import re
-import time
 from dataclasses import dataclass
 
 from aoc.utils.interfaces import Solution
@@ -35,7 +34,9 @@ def main(puzzle_input: list[str]) -> Solution:
     result = run_simulation(connections1)
     part1 = follow_connection(result, "a")
 
-    connections2: list[Connection] = rewire([parse_connection(line) for line in puzzle_input], part1)
+    connections2: list[Connection] = rewire(
+        [parse_connection(line) for line in puzzle_input], part1
+    )
     result = run_simulation(connections2)
     part2 = follow_connection(result, "a")
 
@@ -49,7 +50,6 @@ def run_simulation(connections: list[Connection]) -> dict[str, int]:
         conn = connections.pop(0)
         # print(f"Processing {conn}")
         # print(f"State: {results}")
-
 
         if conn.gate_type == GateType.ASSIGN:
             results[conn.out] = conn.in1
