@@ -1,7 +1,6 @@
 import argparse
 import os
 from dataclasses import dataclass
-from math import sqrt
 
 
 @dataclass(frozen=True)
@@ -22,7 +21,10 @@ class Path:
         self.heuristic = heuristic
 
     def __repr__(self):
-        return f"Search(({self.current.x}, {self.current.y}), {len(self.path)}, {self.heuristic})"
+        return (
+            f"Search(({self.current.x}, {self.current.y}), "
+            f"{len(self.path)}, {self.heuristic})"
+        )
 
     @property
     def risk(self):

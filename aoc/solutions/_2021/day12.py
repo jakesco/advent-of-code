@@ -1,7 +1,7 @@
 import argparse
 import os
 from collections import Counter, deque
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
@@ -27,7 +27,7 @@ class Path:
         allow_more_visits = all(
             [c < self.max_visits for n, c in self.visited.items() if not n.big]
         )
-        return allow_more_visits or node.big or not (node in self.visited)
+        return allow_more_visits or node.big or node not in self.visited
 
     def current_node(self) -> Node | None:
         if self.path:

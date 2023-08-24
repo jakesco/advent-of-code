@@ -1,5 +1,4 @@
 import argparse
-import itertools
 import os
 import re
 from abc import ABC, abstractmethod
@@ -57,7 +56,7 @@ class SnailFishNumber(Element):
         return 3 * self.l.magnitude() + 2 * self.r.magnitude()
 
     def add(self, other: Element) -> "SnailFishNumber":
-        result = SnailFishNumber(self, other)
+        SnailFishNumber(self, other)
         # print(f"{self} + {other}")
         # print(f"= {result}")
         return SnailFishNumber(self, other)

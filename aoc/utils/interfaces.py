@@ -1,4 +1,3 @@
-from typing import NewType
 from dataclasses import dataclass
 
 

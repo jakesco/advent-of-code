@@ -1,5 +1,3 @@
-from functools import reduce
-
 from .shared import Solution
 
 
@@ -23,16 +21,6 @@ def part1(input_) -> tuple[int, int]:
     epsilon = ["0" if x >= threshold else "1" for x in freq]
 
     return (int("".join(gamma), 2), int("".join(epsilon), 2))
-
-
-def filter(input_: list[str], filter_: list[str]) -> int:
-    print(filter_)
-    for i in range(len(filter_)):
-        input_ = [x for x in input_ if x[i] == filter_[i]]
-        print(input_)
-        if len(input_) == 1:
-            break
-    return int(input_[0], 2)
 
 
 def filter(input_: list[str], index: int, most: bool) -> list[str]:

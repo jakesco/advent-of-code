@@ -1,9 +1,9 @@
+#  ruff: noqa
 import argparse
 import os
 from dataclasses import dataclass
 from functools import cache, reduce
-from itertools import combinations, product
-from pprint import pprint
+from itertools import product
 
 
 class Grid:
@@ -105,6 +105,7 @@ def part2(cuboids: set[Cuboid]) -> int:
 # Inclusion-exclusion principle for finding common points in sets
 # or sweep line algo
 
+
 # Input reading
 def make_range(input_: str) -> range:
     x = input_.split("=")[1]
@@ -142,7 +143,7 @@ if __name__ == "__main__":
     print(
         f"Part 2: {part2({Cuboid(i == 'on', x, y, z) for i, x, y, z in read_input(path)})}"
     )
-    print(f"Part 2: 2758514936282235 (test)")
+    print("Part 2: 2758514936282235 (test)")
 
 
 def main(_):

@@ -1,9 +1,9 @@
-from aoc.utils.interfaces import Solution
+import re
 from collections import defaultdict
 from dataclasses import dataclass
 from pprint import pprint
 
-import re
+from aoc.utils.interfaces import Solution
 
 RE_CONNECTION = re.compile(r"(.*) to (.*) = (\d+)")
 

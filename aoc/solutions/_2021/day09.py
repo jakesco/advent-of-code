@@ -88,7 +88,6 @@ class Graph:
 
         count = 0
         while not q.empty():
-
             n = q.get_nowait()
             if not n.visited:
                 n.visited = True

@@ -5,7 +5,6 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from functools import cache, reduce
 from itertools import combinations
-from pprint import pprint
 
 UNIQUE_ROTATIONS = (
     "I",
@@ -97,7 +96,10 @@ class Scanner:
     center = Beacon()
 
     def __repr__(self):
-        return f"Scanner(id={self.id}, match={self.match.id if self.match else 'None'}, o={self.orientation})"
+        return (
+            f"Scanner(id={self.id}, match={self.match.id if self.match else 'None'}, "
+            f"o={self.orientation})"
+        )
 
     def rotate(self, rotations: str) -> set[Beacon]:
         return {rotation_factory(rotations)(b) for b in self.beacons}
@@ -168,7 +170,7 @@ def match_scanners(s: Scanner):
     if s.match is None:
         return
 
-    c = Counter()
+    Counter()
     for rotation in UNIQUE_ROTATIONS:
         r = s.rotate(rotation)
         t = best_translation(s.match.beacons, r)
