@@ -34,7 +34,9 @@ section below.
 
 * Day 01: [The Tyranny of the Rocket Equation](https://adventofcode.com/2019/day/1) | [solution](./aoc/solutions/_2019/day01.py)
 * Day 02: [1202 Program Alarm](https://adventofcode.com/2019/day/2) | [solution](./aoc/solutions/_2019/day02.py)
-* Day 03: [Crossed Wires](https://adventofcode.com/2019/day/2) | [solution](./aoc/solutions/_2019/day03.py)
+* Day 03: [Crossed Wires](https://adventofcode.com/2019/day/3) | [solution](./aoc/solutions/_2019/day03.py)
+* Day 04: [Secure Container](https://adventofcode.com/2019/day/4) | [solution](./aoc/solutions/_2019/day04.py)
+* Day 05: [Sunny with a Chance of Asteroids](https://adventofcode.com/2019/day/5) | [solution](./aoc/solutions/_2019/day05.py)
 
 </details>
 
