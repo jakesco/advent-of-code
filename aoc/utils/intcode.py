@@ -1,12 +1,12 @@
 import copy
 from dataclasses import dataclass, field
 from sys import stderr
-
 from typing import Self
 
 
 class UnknownOpcode(Exception):
     pass
+
 
 @dataclass
 class Op:
@@ -16,9 +16,10 @@ class Op:
     @classmethod
     def from_int(cls, n: int) -> Self:
         op = f"{n:05}"
+        modes = tuple(int(m) for m in reversed(op[:3]))
         return cls(
             code=int(op[-2:]),
-            modes=tuple(reversed(op[:3])),
+            modes=modes,
         )
 
 
@@ -57,6 +58,7 @@ class IntcodeInterpreter:
 
     def reset(self):
         self.output = []
+        self.input = []
         self._halted = False
         self._p = 0
         self._memory = copy.copy(self.tape)
@@ -73,69 +75,72 @@ class IntcodeInterpreter:
         if self.debug:
             print(f"Running {opcode} | Output: {self.output}")
         match opcode:
-            case Op(1, modes):
-                args = self._memory[self._p+1:self._p+4]
-                x = args[0] if modes[0] == '1' else self._memory[args[0]]
-                y = args[1] if modes[1] == '1' else self._memory[args[1]]
-                self._memory[args[2]] = x + y
+            case Op(1, (m0, m1, _)):
+                x = self._get_arg(1, m0)
+                y = self._get_arg(2, m1)
+                z = self._get_arg(3)
+                self._memory[z] = x + y
                 self._p += 4
-            case Op(2, modes):
-                args = self._memory[self._p+1:self._p+4]
-                x = args[0] if modes[0] == '1' else self._memory[args[0]]
-                y = args[1] if modes[1] == '1' else self._memory[args[1]]
-                self._memory[args[2]] = x * y
+            case Op(2, (m0, m1, _)):
+                x = self._get_arg(1, m0)
+                y = self._get_arg(2, m1)
+                z = self._get_arg(3)
+                self._memory[z] = x * y
                 self._p += 4
             case Op(3, _):
-                x = self._memory[self._p + 1]
-                self._memory[x] = self.input.pop()
+                x = self._get_arg(1)
+                self._memory[x] = self.input.pop(0)
                 self._p += 2
-            case Op(4, _):
-                x = self._memory[self._p + 1]
-                self.output.append(self._memory[x])
+            case Op(4, (m0, _, _)):
+                x = self._get_arg(1, m0)
+                self.output.append(x)
                 self._p += 2
-            case Op(5, modes):
-                args = self._memory[self._p+1:self._p+3]
-                x = args[0] if modes[0] == '1' else self._memory[args[0]]
-                y = args[1] if modes[1] == '1' else self._memory[args[1]]
+            case Op(5, (m0, m1, _)):
+                x = self._get_arg(1, m0)
+                y = self._get_arg(2, m1)
                 if x != 0:
                     self._p = y
                 else:
                     self._p += 3
-            case Op(6, modes):
-                args = self._memory[self._p+1:self._p+3]
-                x = args[0] if modes[0] == '1' else self._memory[args[0]]
-                y = args[1] if modes[1] == '1' else self._memory[args[1]]
+            case Op(6, (m0, m1, _)):
+                x = self._get_arg(1, m0)
+                y = self._get_arg(2, m1)
                 if x == 0:
                     self._p = y
                 else:
                     self._p += 3
-            case Op(7, modes):
-                args = self._memory[self._p+1:self._p+4]
-                x = args[0] if modes[0] == '1' else self._memory[args[0]]
-                y = args[1] if modes[1] == '1' else self._memory[args[1]]
+            case Op(7, (m0, m1, _)):
+                x = self._get_arg(1, m0)
+                y = self._get_arg(2, m1)
+                z = self._get_arg(3)
                 if x < y:
-                    self._memory[args[2]] = 1
+                    self._memory[z] = 1
+                else:
+                    self._memory[z] = 0
                 self._p += 4
-            case Op(8, modes):
-                args = self._memory[self._p+1:self._p+4]
-                x = args[0] if modes[0] == '1' else self._memory[args[0]]
-                y = args[1] if modes[1] == '1' else self._memory[args[1]]
+            case Op(8, (m0, m1, _)):
+                x = self._get_arg(1, m0)
+                y = self._get_arg(2, m1)
+                z = self._get_arg(3)
                 if x == y:
-                    self._memory[args[2]] = 1
+                    self._memory[z] = 1
+                else:
+                    self._memory[z] = 0
                 self._p += 4
             case Op(99, _):
                 self._halted = True
             case _:
                 raise UnknownOpcode(opcode)
 
+    def _get_arg(self, offset: int, mode: int = 1) -> int:
+        immediate = self._memory[self._p + offset]
+        return immediate if mode == 1 else self._memory[immediate]
 
     def _next_opcode(self) -> Op:
         return Op.from_int(self._memory[self._p])
 
 
-
 if __name__ == "__main__":
-    tape = '1002,4,3,4,33'
+    tape = "1002,4,3,4,33"
     i = IntcodeInterpreter.loads(tape, debug=True)
     i.execute()
-

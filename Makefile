@@ -10,8 +10,11 @@ new: venv
 install: venv
 	$(PYTHON_VENV) -m pip install -r requirements.txt -e .
 
+test: venv
+	$(PYTHON_VENV) -m pytest tests
+
 venv:
 	python3.11 -m venv venv
 	$(PYTHON_VENV) -m pip install -U pip setuptools
 
-.PHONY: new fix install
+.PHONY: new fix install test
