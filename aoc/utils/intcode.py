@@ -1,33 +1,48 @@
-from __future__ import annotations
-
 import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from sys import stderr
+
+from typing import Self
 
 
 class UnknownOpcode(Exception):
     pass
+
+@dataclass
+class Op:
+    code: int
+    modes: tuple[int, int, int]
+
+    @classmethod
+    def from_int(cls, n: int) -> Self:
+        op = f"{n:05}"
+        return cls(
+            code=int(op[-2:]),
+            modes=tuple(reversed(op[:3])),
+        )
 
 
 @dataclass
 class IntcodeInterpreter:
     tape: list[int]
     debug: bool = False
+    input: list[int] = field(default_factory=list)
+    output: list[int] = field(default_factory=list)
     _p: int = 0
-    _memory: list[int] = None
+    _memory: list[int] = field(init=False)
     _halted: bool = False
 
     def __post_init__(self):
         self._memory = copy.copy(self.tape)
 
     @classmethod
-    def loads(cls, tape: str, *args, debug: bool = False) -> IntcodeInterpreter:
+    def loads(cls, tape: str, *args, debug: bool = False) -> Self:
         try:
             program = [int(n) for n in tape.split(",")]
         except ValueError as e:
             print("Invalid intcode program.", file=stderr)
             raise e
-        interpreter = IntcodeInterpreter(program, debug=debug)
+        interpreter = cls(program, debug=debug)
         if args:
             interpreter.set_args(*args)
         return interpreter
@@ -38,9 +53,10 @@ class IntcodeInterpreter:
         self.reset()
 
     def result(self) -> int:
-        return self._memory[0]
+        return self.output[0]
 
     def reset(self):
+        self.output = []
         self._halted = False
         self._p = 0
         self._memory = copy.copy(self.tape)
@@ -50,27 +66,76 @@ class IntcodeInterpreter:
             print(f"Starting: {self}")
         while not self._halted:
             self._run_instruction()
-            if self.debug:
-                print(f"Mem: {self._memory}, Halted: {self._halted}")
         return self._memory[0]
 
     def _run_instruction(self):
-        instruction = self._memory[self._p : self._p + 4]
+        opcode = self._next_opcode()
         if self.debug:
-            print(f"Running {instruction}")
-        match instruction:
-            case [1, x, y, z]:
-                self._memory[z] = self._memory[x] + self._memory[y]
+            print(f"Running {opcode} | Output: {self.output}")
+        match opcode:
+            case Op(1, modes):
+                args = self._memory[self._p+1:self._p+4]
+                x = args[0] if modes[0] == '1' else self._memory[args[0]]
+                y = args[1] if modes[1] == '1' else self._memory[args[1]]
+                self._memory[args[2]] = x + y
                 self._p += 4
-            case [2, x, y, z]:
-                self._memory[z] = self._memory[x] * self._memory[y]
+            case Op(2, modes):
+                args = self._memory[self._p+1:self._p+4]
+                x = args[0] if modes[0] == '1' else self._memory[args[0]]
+                y = args[1] if modes[1] == '1' else self._memory[args[1]]
+                self._memory[args[2]] = x * y
                 self._p += 4
-            case [99, *_]:
+            case Op(3, _):
+                x = self._memory[self._p + 1]
+                self._memory[x] = self.input.pop()
+                self._p += 2
+            case Op(4, _):
+                x = self._memory[self._p + 1]
+                self.output.append(self._memory[x])
+                self._p += 2
+            case Op(5, modes):
+                args = self._memory[self._p+1:self._p+3]
+                x = args[0] if modes[0] == '1' else self._memory[args[0]]
+                y = args[1] if modes[1] == '1' else self._memory[args[1]]
+                if x != 0:
+                    self._p = y
+                else:
+                    self._p += 3
+            case Op(6, modes):
+                args = self._memory[self._p+1:self._p+3]
+                x = args[0] if modes[0] == '1' else self._memory[args[0]]
+                y = args[1] if modes[1] == '1' else self._memory[args[1]]
+                if x == 0:
+                    self._p = y
+                else:
+                    self._p += 3
+            case Op(7, modes):
+                args = self._memory[self._p+1:self._p+4]
+                x = args[0] if modes[0] == '1' else self._memory[args[0]]
+                y = args[1] if modes[1] == '1' else self._memory[args[1]]
+                if x < y:
+                    self._memory[args[2]] = 1
+                self._p += 4
+            case Op(8, modes):
+                args = self._memory[self._p+1:self._p+4]
+                x = args[0] if modes[0] == '1' else self._memory[args[0]]
+                y = args[1] if modes[1] == '1' else self._memory[args[1]]
+                if x == y:
+                    self._memory[args[2]] = 1
+                self._p += 4
+            case Op(99, _):
                 self._halted = True
             case _:
-                raise UnknownOpcode(instruction[0])
+                raise UnknownOpcode(opcode)
+
+
+    def _next_opcode(self) -> Op:
+        return Op.from_int(self._memory[self._p])
+
 
 
 if __name__ == "__main__":
-    i = IntcodeInterpreter.loads("1,9,10,3,2,3,11,0,99,30,40,50", debug=True)
+    tape = '1002,4,3,4,33'
+    i = IntcodeInterpreter.loads(tape, debug=True)
     i.execute()
+
