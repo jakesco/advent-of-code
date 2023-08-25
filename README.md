@@ -37,6 +37,7 @@ section below.
 * Day 03: [Crossed Wires](https://adventofcode.com/2019/day/3) | [solution](./aoc/solutions/_2019/day03.py)
 * Day 04: [Secure Container](https://adventofcode.com/2019/day/4) | [solution](./aoc/solutions/_2019/day04.py)
 * Day 05: [Sunny with a Chance of Asteroids](https://adventofcode.com/2019/day/5) | [solution](./aoc/solutions/_2019/day05.py)
+* Day 06: [Universal Orbit Map](https://adventofcode.com/2019/day/6) | [solution](./aoc/solutions/_2019/day06.py)
 
 </details>
 
