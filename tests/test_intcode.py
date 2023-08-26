@@ -205,3 +205,35 @@ def test_large_example_3():
     interpreter.input = [9]
     interpreter.execute()
     assert interpreter.output == [1001]
+
+
+def simple_amp(tape: str, sequence: list[int]) -> int:
+    interpreter = IntcodeInterpreter.loads(tape)
+    output = 0
+    for s in sequence:
+        interpreter.reset()
+        interpreter.input = [s, output]
+        interpreter.execute()
+        output = interpreter.output.pop(0)
+    return output
+
+
+def test_simple_amp_1():
+    sequence = [4, 3, 2, 1, 0]
+    tape = "3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0"
+    assert simple_amp(tape, sequence) == 43210
+
+
+def test_simple_amp_2():
+    sequence = [0, 1, 2, 3, 4]
+    tape = "3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0"
+    assert simple_amp(tape, sequence) == 54321
+
+
+def test_simple_amp_3():
+    sequence = [1, 0, 4, 3, 2]
+    tape = (
+        "3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,"
+        "1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0"
+    )
+    assert simple_amp(tape, sequence) == 65210

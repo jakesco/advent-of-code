@@ -7,10 +7,10 @@ Run solutions by passing the year, day and puzzle input like so:
 $ python aoc <year> <day> [input]
 ```
 
-If no input is provided, and you have a `.token` file in the root 
-of the project, the script will attempt to automatically download 
-your puzzle input from the Advent of Code website. Steps to get 
-your session token are in the [Puzzle Input Tip](#puzzle-input-tip) 
+If no input is provided, and you have a `.token` file in the root
+of the project, the script will attempt to automatically download
+your puzzle input from the Advent of Code website. Steps to get
+your session token are in the [Puzzle Input Tip](#puzzle-input-tip)
 section below.
 
 ## Solutions
@@ -38,6 +38,7 @@ section below.
 * Day 04: [Secure Container](https://adventofcode.com/2019/day/4) | [solution](./aoc/solutions/_2019/day04.py)
 * Day 05: [Sunny with a Chance of Asteroids](https://adventofcode.com/2019/day/5) | [solution](./aoc/solutions/_2019/day05.py)
 * Day 06: [Universal Orbit Map](https://adventofcode.com/2019/day/6) | [solution](./aoc/solutions/_2019/day06.py)
+* Day 07: [Amplification Circuit](https://adventofcode.com/2019/day/7) | [solution](./aoc/solutions/_2019/day07.py)
 
 </details>
 
