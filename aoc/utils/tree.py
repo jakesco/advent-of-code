@@ -27,6 +27,14 @@ class Node:
         child.parent = self
         self.children.append(child)
 
+    def parents(self) -> set[str]:
+        current = self
+        nodes = set()
+        while current.parent:
+            nodes.add(current.parent.name)
+            current = current.parent
+        return nodes
+
     def __str__(self) -> str:
         return f"{self.name}({self.value})"
 

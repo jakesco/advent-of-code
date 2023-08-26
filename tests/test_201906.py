@@ -14,9 +14,11 @@ def test_201906_1():
         "E)J",
         "J)K",
         "K)L",
+        "K)YOU",
+        "I)SAN",
     ]
     sol = main(test_input)
-    assert sol.part1 == 42
+    assert sol.part1 == 54
 
 
 def test_201906_2():

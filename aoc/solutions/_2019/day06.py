@@ -3,12 +3,14 @@ from aoc.utils.interfaces import Solution
 
 
 def main(puzzle_input: list[str]) -> Solution:
-    root = build_tree(puzzle_input)
-    orbits = t.process(root, count_orbits)
-    return Solution(sum(orbits))
+    tree = build_tree(puzzle_input)
+    orbits = t.process(tree["COM"], count_orbits)
+    moves = move_orbits(tree["YOU"], tree["SAN"])
+
+    return Solution(sum(orbits), moves)
 
 
-def build_tree(orbits: list[str]) -> t.Node:
+def build_tree(orbits: list[str]) -> dict[str, t.Node]:
     nodes = {}
     for orbit in orbits:
         parent, child = orbit.split(")")
@@ -17,7 +19,7 @@ def build_tree(orbits: list[str]) -> t.Node:
         if child not in nodes:
             nodes[child] = t.Node(child)
         nodes[parent].add(nodes[child])
-    return nodes["COM"]
+    return nodes
 
 
 def count_orbits(n: t.Node) -> int:
@@ -26,6 +28,20 @@ def count_orbits(n: t.Node) -> int:
         orbits += 1
         n = n.parent
     return orbits
+
+
+def move_orbits(you: t.Node, santa: t.Node) -> int:
+    shared_parents = you.parents().intersection(santa.parents())
+    return count_moves(you, shared_parents) + count_moves(santa, shared_parents)
+
+
+def count_moves(n: t.Node, stop_nodes: set[str]) -> int:
+    current = n.parent
+    moves = 0
+    while current and current.name not in stop_nodes:
+        moves += 1
+        current = current.parent
+    return moves
 
 
 if __name__ == "__main__":
