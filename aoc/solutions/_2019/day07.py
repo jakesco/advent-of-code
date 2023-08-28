@@ -27,7 +27,6 @@ def run_part1(tape: str) -> int:
 def run_part2(tape: str) -> int:
     max_ = 0
     for sequence in permutations(range(5, 10), r=5):
-        output = 0
         amp_array = build_amp_array(tape, sequence)
         output = run_array(amp_array)
         max_ = max(max_, output)
@@ -36,7 +35,7 @@ def run_part2(tape: str) -> int:
 
 def build_amp_array(tape: str, sequence: tuple[int, ...]) -> list[IntcodeInterpreter]:
     def fn(tape: str, phase: int) -> IntcodeInterpreter:
-        m = IntcodeInterpreter.loads(tape)
+        m = IntcodeInterpreter.loads(tape, block_on_output=True)
         m.input = [phase]
         return m
 
@@ -45,11 +44,12 @@ def build_amp_array(tape: str, sequence: tuple[int, ...]) -> list[IntcodeInterpr
 
 def run_array(amp_array: list[IntcodeInterpreter]) -> int:
     output = 0
-    while not all([m._halted for m in amp_array]):
+    while not amp_array[-1]._halted:
         for machine in amp_array:
             machine.input.append(output)
             machine.execute()
-            output = machine.output.pop(0)
+            if machine.output:
+                output = machine.output.pop(0)
     return output
 
 

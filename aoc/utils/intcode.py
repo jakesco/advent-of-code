@@ -29,21 +29,25 @@ class IntcodeInterpreter:
     debug: bool = False
     input: list[int] = field(default_factory=list)
     output: list[int] = field(default_factory=list)
+    block_on_output: bool = False
     _p: int = 0
     _memory: list[int] = field(init=False)
     _halted: bool = False
+    _running: bool = False
 
     def __post_init__(self):
         self._memory = copy.copy(self.tape)
 
     @classmethod
-    def loads(cls, tape: str, *args, debug: bool = False) -> Self:
+    def loads(
+        cls, tape: str, *args, debug: bool = False, block_on_output: bool = False
+    ) -> Self:
         try:
             program = [int(n) for n in tape.split(",")]
         except ValueError as e:
             print("Invalid intcode program.", file=stderr)
             raise e
-        interpreter = cls(program, debug=debug)
+        interpreter = cls(program, debug=debug, block_on_output=block_on_output)
         if args:
             interpreter.set_args(*args)
         return interpreter
@@ -66,50 +70,53 @@ class IntcodeInterpreter:
     def execute(self) -> int:
         if self.debug:
             print(f"Starting: {self}")
-        while not self._halted:
+        self._running = True
+        while self._running and not self._halted:
             self._run_instruction()
         return self._memory[0]
 
     def _run_instruction(self):
         opcode = self._next_opcode()
         if self.debug:
-            print(f"Running {opcode} | Output: {self.output}")
+            print(f"Running {opcode} | Input: {self.input} | Output: {self.output}")
         match opcode:
-            case Op(1, (m0, m1, _)):
+            case Op(1, (m0, m1, _)):  # ADD
                 x = self._get_arg(1, m0)
                 y = self._get_arg(2, m1)
                 z = self._get_arg(3)
                 self._memory[z] = x + y
                 self._p += 4
-            case Op(2, (m0, m1, _)):
+            case Op(2, (m0, m1, _)):  # MUL
                 x = self._get_arg(1, m0)
                 y = self._get_arg(2, m1)
                 z = self._get_arg(3)
                 self._memory[z] = x * y
                 self._p += 4
-            case Op(3, _):
+            case Op(3, _):  # INPUT
                 x = self._get_arg(1)
                 self._memory[x] = self.input.pop(0)
                 self._p += 2
-            case Op(4, (m0, _, _)):
+            case Op(4, (m0, _, _)):  # OUTPUT
                 x = self._get_arg(1, m0)
                 self.output.append(x)
                 self._p += 2
-            case Op(5, (m0, m1, _)):
+                if self.block_on_output and self._memory[self._p] != 99:
+                    self._running = False
+            case Op(5, (m0, m1, _)):  # JUMP-IF-TRUE
                 x = self._get_arg(1, m0)
                 y = self._get_arg(2, m1)
                 if x != 0:
                     self._p = y
                 else:
                     self._p += 3
-            case Op(6, (m0, m1, _)):
+            case Op(6, (m0, m1, _)):  # JUMP-IF-FALSE
                 x = self._get_arg(1, m0)
                 y = self._get_arg(2, m1)
                 if x == 0:
                     self._p = y
                 else:
                     self._p += 3
-            case Op(7, (m0, m1, _)):
+            case Op(7, (m0, m1, _)):  # LESS THAN
                 x = self._get_arg(1, m0)
                 y = self._get_arg(2, m1)
                 z = self._get_arg(3)
@@ -118,7 +125,7 @@ class IntcodeInterpreter:
                 else:
                     self._memory[z] = 0
                 self._p += 4
-            case Op(8, (m0, m1, _)):
+            case Op(8, (m0, m1, _)):  # EQUALS
                 x = self._get_arg(1, m0)
                 y = self._get_arg(2, m1)
                 z = self._get_arg(3)
@@ -127,7 +134,8 @@ class IntcodeInterpreter:
                 else:
                     self._memory[z] = 0
                 self._p += 4
-            case Op(99, _):
+            case Op(99, _):  # HALT
+                self._running = False
                 self._halted = True
             case _:
                 raise UnknownOpcode(opcode)
@@ -141,6 +149,14 @@ class IntcodeInterpreter:
 
 
 if __name__ == "__main__":
-    tape = "1002,4,3,4,33"
-    i = IntcodeInterpreter.loads(tape, debug=True)
+    # tape that takes an input and pushes it to output
+    tape = "3,0,4,0,3,0,4,0,99"
+    i = IntcodeInterpreter.loads(tape, debug=True, block_on_output=True)
+    i.input = [1]
     i.execute()
+    print(i)
+    i.input = [2]
+    i.execute()
+    print(i)
+    i.execute()
+    print(i)
