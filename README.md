@@ -70,7 +70,7 @@ section below.
 
 </details>
 
-<details open>
+<details>
 <summary>2022</summary>
 
 * Day 01: [Calorie Counting](https://adventofcode.com/2022/day/1) | [solution](./aoc/solutions/_2022/day01.py)
@@ -96,6 +96,13 @@ section below.
 * Day 21: [Monkey Math](https://adventofcode.com/2022/day/21) | [solution](./aoc/solutions/_2022/day21.py)
 * Day 22: [Monkey Map](https://adventofcode.com/2022/day/22) | [solution](./aoc/solutions/_2022/day22.py)
 * Day 23: [Unstable Diffusion](https://adventofcode.com/2022/day/23) | [solution](./aoc/solutions/_2022/day23.py)
+
+</details>
+
+<details open>
+<summary>2023</summary>
+
+* Day 01: [](https://adventofcode.com/2023/day/1) | [solution](./aoc/solutions/_2023/day01.py)
 
 </details>
 
