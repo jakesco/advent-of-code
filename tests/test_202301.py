@@ -20,4 +20,3 @@ zoneight234
 7pqrstsixteen
 """
     assert part2(x.split()) == 281
-
