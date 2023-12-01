@@ -10,7 +10,6 @@ def part1(lines: list[str]) -> int:
     for l in lines:
         y = [c for c in l if c.isdigit()]
         y = int("".join([y[0], y[-1]]))
-        print(y)
         sum += y
     return sum
 
@@ -45,7 +44,13 @@ def part2(lines: list[str]) -> int:
             except ValueError:
                 pass
         min_ = y[min(d, key=d.get)]
-        max_ = y[max(d, key=d.get)]
+        f = {}
+        for n in y:
+            try:
+                f[n] = l[::-1].index(n[::-1])
+            except ValueError:
+                pass
+        max_ = y[min(f, key=f.get)]
         x = int("".join([min_, max_]))
         sum += x
     return sum
