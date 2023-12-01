@@ -102,7 +102,7 @@ section below.
 <details open>
 <summary>2023</summary>
 
-* Day 01: [](https://adventofcode.com/2023/day/1) | [solution](./aoc/solutions/_2023/day01.py)
+* Day 01: [Trebuchet?!](https://adventofcode.com/2023/day/1) | [solution](./aoc/solutions/_2023/day01.py)
 
 </details>
 
