@@ -103,6 +103,7 @@ section below.
 <summary>2023</summary>
 
 * Day 01: [Trebuchet?!](https://adventofcode.com/2023/day/1) | [solution](./aoc/solutions/_2023/day01.py)
+* Day 02: [Cube Conundrum](https://adventofcode.com/2023/day/2) | [solution](./aoc/solutions/_2023/day02.py)
 
 </details>
 
