@@ -1,66 +1,90 @@
+from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Self
+from functools import reduce
+from typing import TypeAlias
 
 from aoc.utils.interfaces import Solution
 
+Grid: TypeAlias = Callable[[int, int], [str]]
+
+
+@dataclass(frozen=True, eq=True)
+class Symbol:
+    glyph: str
+    x: int
+    y: int
+
 
 @dataclass
-class Number:
+class Part:
     id: int
-    row: int
-    left: int
-    right: int
-
-    @classmethod
-    def new(cls, digits: str, row, col) -> Self:
-        return cls(
-            int(digits),
-            row=row,
-            left=col - len(digits),
-            right=col - 1,
-        )
+    symbol: Symbol
 
 
 def main(puzzle_input: list[str]) -> Solution:
-    numbers = []
-    symbols = set()
-    digit_accumulator = ""
-    for row, line in enumerate(puzzle_input):
-        if digit_accumulator:
-            numbers.append(Number.new(digit_accumulator, row, len(puzzle_input[0])))
-            digit_accumulator = ""
-        for col, char in enumerate(line):
-            if char.isdigit():
-                digit_accumulator += char
+    rows = len(puzzle_input)
+    cols = len(puzzle_input[0])
+    grid = gridgetter(puzzle_input)
+
+    parts = []
+    number_acc = ""
+    adj = None
+    for x in range(rows):
+        for y in range(cols):
+            c = grid(x, y)
+
+            if c.isdigit():
+                number_acc += c
+                if adj is None:
+                    adj = find_adj(grid, x, y)
                 continue
-            if digit_accumulator:
-                numbers.append(Number.new(digit_accumulator, row, col))
-                digit_accumulator = ""
-            if not char == ".":
-                symbols.add((row, col))
 
-    parts = find_parts(numbers, symbols)
+            if adj is not None:
+                p = Part(int(number_acc), adj)
+                parts.append(p)
+
+            number_acc = ""
+            adj = None
+
     part1 = sum([part.id for part in parts])
-    return Solution(part1)
+    part2 = find_gear_ratio(parts)
+    return Solution(part1, part2)
 
 
-def find_parts(numbers: list[Number], symbols: set[tuple[int, int]]) -> list[Number]:
-    out = []
-    for n in numbers:
-        print(f"Checking {n}")
-        if is_part(n, symbols):
-            out.append(n)
-    return out
+def gridgetter(grid: list[str]) -> Grid:
+    """Wrapper to return . if out of bounds"""
+
+    def f(x: int, y: int) -> str:
+        try:
+            return grid[x][y]
+        except IndexError:
+            return "."
+
+    return f
 
 
-def is_part(number: Number, symbols: set[tuple[int, int]]) -> bool:
-    for x in range(number.row - 1, number.row + 2):
-        for y in range(number.left - 1, number.right + 2):
-            print(f"Checking: ({x}, {y})")
-            if (x, y) in symbols:
-                print(f"Found!")
-                return True
-    return False
+def find_adj(grid: Grid, x: int, y: int) -> Symbol | None:
+    """Checks points adjacent to grid[x][y].
+    Returns True if a symbol is adjacent."""
+    for i in (-1, 0, 1):
+        for j in (-1, 0, 1):
+            c = grid(x + i, y + j)
+            if c == "." or c.isdigit():
+                continue
+            return Symbol(c, x + i, y + j)
+    return None
+
+
+def find_gear_ratio(parts: list[Part]) -> int:
+    symbol_types = defaultdict(list)
+    for part in parts:
+        if part.symbol.glyph == "*":
+            symbol_types[part.symbol].append(part.id)
+
+    return sum(
+        [reduce(lambda x, y: x * y, v, 1) for v in symbol_types.values() if len(v) == 2]
+    )
 
 
 if __name__ == "__main__":
@@ -74,6 +98,7 @@ if __name__ == "__main__":
 ......755.
 ...$.*....
 .664.598.."""
-    # part1 4361
-    print(main(sample.split("\n")))
-    # 553825
+    s = main(sample.split("\n"))
+    print(s)
+    assert s.part1 == 4361
+    assert s.part2 == 467835
