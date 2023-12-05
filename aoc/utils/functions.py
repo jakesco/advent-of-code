@@ -1,4 +1,8 @@
+from functools import reduce
 from itertools import islice
+from typing import Callable, TypeVar
+
+T = TypeVar("T")
 
 
 def batched(iterable, n):
@@ -12,3 +16,8 @@ def batched(iterable, n):
     it = iter(iterable)
     while batch := list(islice(it, n)):
         yield batch
+
+
+def apply(initial: T, funcs: list[Callable[[T], T]]) -> T:
+    """Apply all functions to initial argument."""
+    return reduce(lambda x, y: y(x), funcs[1:], funcs[0](initial))

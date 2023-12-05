@@ -1,9 +1,8 @@
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterator
 from dataclasses import dataclass
-from functools import reduce
-from itertools import batched
 from typing import Callable, Self
 
+from aoc.utils.functions import apply
 from aoc.utils.interfaces import Solution
 
 
@@ -40,25 +39,12 @@ def mapper_factory(map_: list[str]) -> Callable[[int], int]:
     return mapper
 
 
-def feed_seeds(seeds: Iterable[int]) -> Iterator[int]:
-    for start, length in batched(seeds, 2):
-        yield from range(start, start + length)
-
-
 def main(puzzle_input: list[str]) -> Solution:
     mappers = [mapper_factory(line) for line in feed_input(puzzle_input[2:])]
     seeds = list(map(int, puzzle_input[0].split(":")[1].split()))
 
-    part1 = min(
-        [reduce(lambda x, y: y(x), mappers[1:], mappers[0](seed)) for seed in seeds]
-    )
-    part2 = min(
-        [
-            reduce(lambda x, y: y(x), mappers[1:], mappers[0](seed))
-            for seed in feed_seeds(seeds)
-        ]
-    )
-    return Solution(part1, part2)
+    part1 = min([apply(seed, mappers) for seed in seeds])
+    return Solution(part1)
 
 
 if __name__ == "__main__":
