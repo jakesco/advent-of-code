@@ -46,7 +46,7 @@ def main(puzzle_input: list[str]) -> Solution:
     mappers = [mapper_factory(line) for line in feed_input(puzzle_input[2:])]
     seeds = list(map(int, puzzle_input[0].split(":")[1].split()))
 
-    part1 = min([apply(seed, mappers) for seed in seeds])
+    part1 = min(apply(seed, mappers) for seed in seeds)
     return Solution(part1)
 
 

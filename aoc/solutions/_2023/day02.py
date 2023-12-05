@@ -41,23 +41,19 @@ class Game:
 def main(puzzle_input: list[str]) -> Solution:
     games = [Game.from_str(line) for line in puzzle_input if line]
     part1 = sum(
-        [
-            game.id
-            for game in games
-            if not any([r.red > 12 or r.green > 13 or r.blue > 14 for r in game.rounds])
-        ]
+        game.id
+        for game in games
+        if not any([r.red > 12 or r.green > 13 or r.blue > 14 for r in game.rounds])
     )
     part2 = sum(
-        [
-            reduce(
-                lambda a, b: Round(
-                    max(a.red, b.red), max(a.green, b.green), max(a.blue, b.blue)
-                ),
-                g.rounds[1:],
-                g.rounds[0],
-            ).power()
-            for g in games
-        ]
+        reduce(
+            lambda a, b: Round(
+                max(a.red, b.red), max(a.green, b.green), max(a.blue, b.blue)
+            ),
+            g.rounds[1:],
+            g.rounds[0],
+        ).power()
+        for g in games
     )
     return Solution(part1, part2)
 

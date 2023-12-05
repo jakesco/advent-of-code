@@ -16,8 +16,8 @@ def main(puzzle_input: list[str]) -> Solution:
             counts[k + i + 1] += counts[k]
 
     return Solution(
-        sum([2 ** (wins - 1) for wins in cards.values() if wins > 0]),
-        sum([count for count in counts.values()]),
+        sum(2 ** (wins - 1) for wins in cards.values() if wins > 0),
+        sum(count for count in counts.values()),
     )
 
 

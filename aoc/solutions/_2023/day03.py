@@ -83,7 +83,7 @@ def find_gear_ratio(parts: list[Part]) -> int:
             symbol_types[part.symbol].append(part.id)
 
     return sum(
-        [reduce(lambda x, y: x * y, v, 1) for v in symbol_types.values() if len(v) == 2]
+        reduce(lambda x, y: x * y, v, 1) for v in symbol_types.values() if len(v) == 2
     )
 
 
