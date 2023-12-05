@@ -106,6 +106,7 @@ section below.
 * Day 02: [Cube Conundrum](https://adventofcode.com/2023/day/2) | [solution](./aoc/solutions/_2023/day02.py)
 * Day 03: [Gear Ratios](https://adventofcode.com/2023/day/3) | [solution](./aoc/solutions/_2023/day03.py)
 * Day 04: [Scratchcards](https://adventofcode.com/2023/day/4) | [solution](./aoc/solutions/_2023/day04.py)
+* Day 04: [If You Give A Seed A Fertilizer](https://adventofcode.com/2023/day/5) | [solution](./aoc/solutions/_2023/day05.py)
 
 </details>
 
