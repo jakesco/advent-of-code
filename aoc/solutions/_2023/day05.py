@@ -5,6 +5,9 @@ from typing import Callable, Self
 from aoc.utils.functions import apply
 from aoc.utils.interfaces import Solution
 
+# TODO: for part 2 randomly pick some seeds to find a plausible
+# range of local minima. Check all the seeds in that min range.
+
 
 @dataclass
 class Conversion:
