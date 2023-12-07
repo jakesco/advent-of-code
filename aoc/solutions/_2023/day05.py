@@ -7,20 +7,37 @@ from typing import Callable, Self
 from aoc.utils.functions import apply
 from aoc.utils.interfaces import Solution
 
-# TODO: for part 2 randomly pick some seeds to find a plausible
-#  range of local minima. Check all the seeds in that min range.
-
 
 @dataclass
 class Conversion:
-    lower: int
-    upper: int
-    diff: int
+    dest: int
+    src: int
+    length: int
 
     @classmethod
     def from_range(cls, line: str) -> Self:
-        dest, src, length = map(int, line.split())
-        return cls(src, src + length, dest - src)
+        return cls(*map(int, line.split()))
+
+
+@dataclass
+class Mapper:
+    ranges: list[Conversion]
+
+    @classmethod
+    def from_str(cls, lines: list[str]) -> Self:
+        return cls([Conversion.from_range(line) for line in lines])
+
+    def forward(self, x: int) -> int:
+        for r in self.ranges:
+            if r.src <= x <= r.src + r.length:
+                return x + r.dest - r.src
+        return x
+
+    def backward(self, x: int) -> int:
+        for r in self.ranges:
+            if r.dest <= x <= r.dest + r.length:
+                return x + r.src - r.dest
+        return x
 
 
 def feed_input(lines: list[str]) -> Iterator[list[str]]:
@@ -32,73 +49,53 @@ def feed_input(lines: list[str]) -> Iterator[list[str]]:
     yield lines[start:]
 
 
-def mapper_factory(map_: list[str]) -> Callable[[int], int]:
-    conversions = [Conversion.from_range(line) for line in map_]
-
-    def mapper(x: int) -> int:
-        for c in conversions:
-            if c.lower <= x <= c.upper:
-                return x + c.diff
-        return x
-
-    return mapper
+def in_seed_range(seed: int, ranges: list[tuple[int, int]]) -> bool:
+    for r in ranges:
+        if r[0] <= seed <= r[1]:
+            return True
+    return False
 
 
-def check_seed_range(
-    start: int, length: int, mappers: list[Callable[[int], int]]
-) -> tuple[int, int]:
-    """Returns an approximate minimum seed value"""
-    step = round(sqrt(length))
-    min_check, min_val = start, apply(start, mappers)
-    check = start + step
-    while check < start + length:
-        val = apply(check, mappers)
-        if val < min_val:
-            min_check, min_val = check, val
-        check += step
-    return min_check, min_val
+def find_min_seed(
+    seed_ranges: list[tuple[int, int]], mappers: list[Callable[[int], int]]
+) -> int:
+    """Starts at location 0 and applies the mappers backwards until a
+    seed is in range. This makes some jumps first to find an approximate seed
+    then refines the seed after."""
+    end = max(b for _, b in seed_ranges)
+    step = round(sqrt(end)) or 1
+    approx = 0
+    for check in range(0, end, step):
+        seed = apply(check, mappers)
+        if in_seed_range(seed, seed_ranges):
+            approx = check
+            break
 
-
-def refine_min_seed(start: int, mappers: list[Callable[[int], int]]) -> int:
-    min_val = apply(start, mappers)
-    left = apply(start - 1, mappers)
-    right = apply(start + 1, mappers)
-    if left < min_val:
-        curr = start - 1
-        val = min_val = left
-        while val <= min_val:
-            curr -= 1
-            val = apply(curr, mappers)
-        return curr + 1
-    if right < min_val:
-        curr = start + 1
-        val = min_val = right
-        while val <= min_val:
-            curr += 1
-            val = apply(curr, mappers)
-        return curr - 1
-    else:
-        return start
+    for check in range(approx - step, approx):
+        seed = apply(check, mappers)
+        if in_seed_range(seed, seed_ranges):
+            return seed
 
 
 def main(puzzle_input: list[str]) -> Solution:
-    mappers = [mapper_factory(line) for line in feed_input(puzzle_input[2:])]
+    mappers = [Mapper.from_str(line) for line in feed_input(puzzle_input[2:])]
+    forward = [mapper.forward for mapper in mappers]
+    backward = [mapper.backward for mapper in mappers]
+    backward.reverse()
 
     seeds = list(map(int, puzzle_input[0].split(":")[1].split()))
-    part1 = min(apply(seed, mappers) for seed in seeds)
+    part1 = min(apply(seed, forward) for seed in seeds)
 
     seed_ranges = [
-        (int(a), int(b)) for a, b in batched(puzzle_input[0].split(":")[1].split(), 2)
+        (start, start + length)
+        for start, length in batched(map(int, puzzle_input[0].split(":")[1].split()), 2)
     ]
-    approx_min_seed, min_val = check_seed_range(*seed_ranges[0], mappers)
-    for r in seed_ranges[1:]:
-        check, val = check_seed_range(*r, mappers)
-        if val <= min_val:
-            approx_min_seed, min_val = check, val
-    min_seed = refine_min_seed(approx_min_seed, mappers)
-    part2 = apply(min_seed, mappers)
+    min_seed = find_min_seed(seed_ranges, backward)
+    print(apply(min_seed - 1, forward))
+    print(apply(min_seed, forward))
+    print(apply(min_seed + 1, forward))
 
-    return Solution(part1, part2)
+    return Solution(part1, apply(min_seed, forward))
 
 
 if __name__ == "__main__":
@@ -135,15 +132,8 @@ temperature-to-humidity map:
 humidity-to-location map:
 60 56 37
 56 93 4"""
-    # Testing mapper function
-    test_mapper = mapper_factory(["50 98 2", "52 50 48"])
-    assert test_mapper(98) == 50
-    assert test_mapper(99) == 51
-    assert test_mapper(53) == 55
-    assert test_mapper(10) == 10
-
     s = main(sample.split("\n"))
     print(s)
     assert s.part1 == 35
     assert s.part2 == 46
-    # 79874952 too high
+    # 79874952 too high ?
