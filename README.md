@@ -109,6 +109,7 @@ section below.
 * Day 05: [If You Give A Seed A Fertilizer](https://adventofcode.com/2023/day/5) | [solution](./aoc/solutions/_2023/day05.py)
 * Day 06: [Wait For It](https://adventofcode.com/2023/day/6) | [solution](./aoc/solutions/_2023/day06.py)
 * Day 07: [Camel Cards](https://adventofcode.com/2023/day/7) | [solution](./aoc/solutions/_2023/day07.py)
+* Day 08: [Haunted Wasteland](https://adventofcode.com/2023/day/8) | [solution](./aoc/solutions/_2023/day08.py)
 
 </details>
 

@@ -14,7 +14,7 @@ def main(puzzle_input: list[str]) -> Solution:
     moves, graph = parse_input(puzzle_input)
     return Solution(
         count_steps("AAA", moves, graph),
-        lcm(*(count_steps(node, moves, graph) for node in graph if node.endswith("A"))),
+        lcm(*[count_steps(node, moves, graph) for node in graph if node.endswith("A")]),
     )
 
 
