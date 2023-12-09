@@ -1,70 +1,40 @@
-import re
-from itertools import cycle
-from math import lcm
-from typing import TypeAlias
+from functools import reduce
 
 from aoc.utils.interfaces import Solution
 
-Graph: TypeAlias = dict[str, tuple[str, str]]
-
-NODE = re.compile(r"([A-Z0-9]+) = \(([A-Z0-9]+), ([A-Z0-9]+)\)")
-
 
 def main(puzzle_input: list[str]) -> Solution:
-    moves, graph = parse_input(puzzle_input)
-    return Solution(
-        count_steps("AAA", moves, graph),
-        lcm(*[count_steps(node, moves, graph) for node in graph if node.endswith("A")]),
-    )
+    histories = (list(map(int, line.split())) for line in puzzle_input)
+    predictions = map(predict, histories)
+    return Solution(*map(sum, zip(*predictions)))
 
 
-def parse_input(puzzle_input: list[str]) -> tuple[str, Graph]:
-    moves = puzzle_input[0].strip()
-    graph = {}
-    for line in puzzle_input[2:]:
-        m = NODE.match(line)
-        a, b, c = m.groups()
-        graph[a] = (b, c)
-    return moves, graph
+def predict(history: list[int]) -> tuple[int, int]:
+    """Given a history, return (next, prev) predictions."""
+    next_data = [history[-1]]
+    prev_data = [history[0]]
+    while not all(h == 0 for h in history):
+        history = diff_history(history)
+        next_data.append(history[-1])
+        prev_data.append(history[0])
+    return sum(next_data), reduce(lambda x, y: y - x, reversed(prev_data))
 
 
-def count_steps(start_node: str, moves: str, graph: Graph) -> int:
-    curr = start_node
-    steps = 0
-    for move in cycle(moves):
-        side = 0 if move == "L" else 1
-        curr = graph[curr][side]
-        steps += 1
-        if curr.endswith("Z"):
-            break
-    return steps
+def diff_history(history: list[int]) -> list[int]:
+    new_hist = []
+    curr = history[0]
+    for h in history[1:]:
+        new_hist.append(h - curr)
+        curr = h
+    return new_hist
 
 
 if __name__ == "__main__":
-    sample_1 = """RL
-
-AAA = (BBB, CCC)
-BBB = (DDD, EEE)
-CCC = (ZZZ, GGG)
-DDD = (DDD, DDD)
-EEE = (EEE, EEE)
-GGG = (GGG, GGG)
-ZZZ = (ZZZ, ZZZ)"""
-    a = count_steps("AAA", *parse_input(sample_1.split("\n")))
-    assert a == 2
-
-    sample_2 = """LR
-
-11A = (11B, XXX)
-11B = (XXX, 11Z)
-11Z = (11B, XXX)
-22A = (22B, XXX)
-22B = (22C, 22C)
-22C = (22Z, 22Z)
-22Z = (22B, 22B)
-XXX = (XXX, XXX)"""
-    moves, graph = parse_input(sample_2.split("\n"))
-    b = lcm(*[count_steps(node, moves, graph) for node in graph if node.endswith("A")])
-    assert b == 6
-
-    print(Solution(a, b))
+    sample_1 = """0 3 6 9 12 15
+1 3 6 10 15 21
+10 13 16 21 30 45
+"""
+    s = main(sample_1.splitlines())
+    print(s)
+    assert s.part1 == 114
+    assert s.part2 == 2
