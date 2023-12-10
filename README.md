@@ -111,6 +111,7 @@ section below.
 * Day 07: [Camel Cards](https://adventofcode.com/2023/day/7) | [solution](./aoc/solutions/_2023/day07.py)
 * Day 08: [Haunted Wasteland](https://adventofcode.com/2023/day/8) | [solution](./aoc/solutions/_2023/day08.py)
 * Day 09: [Mirage Maintenance](https://adventofcode.com/2023/day/9) | [solution](./aoc/solutions/_2023/day09.py)
+* Day 10: [Pipe Maze](https://adventofcode.com/2023/day/10) | [solution](./aoc/solutions/_2023/day10.py)
 
 </details>
 
