@@ -1,4 +1,3 @@
-from pprint import pprint
 from dataclasses import dataclass
 from typing import TypeAlias
 
@@ -20,7 +19,6 @@ Graph: TypeAlias = dict[Point, list[Point]]
 
 
 def main(puzzle_input: list[str]) -> Solution:
-    rows, cols = len(puzzle_input), len(puzzle_input[0])
     start, graph = parse_graph(puzzle_input)
     visited = set()
     current = start
@@ -48,7 +46,12 @@ def parse_graph(lines: list[str]) -> tuple[Point, Graph]:
     for y, line in enumerate(lines):
         for x, c in enumerate(line):
             p = Point(x, y)
-            n, s, e, w = Point(x, y - 1), Point(x, y + 1), Point(x + 1, y), Point(x - 1, y)
+            n, s, e, w = (
+                Point(x, y - 1),
+                Point(x, y + 1),
+                Point(x + 1, y),
+                Point(x - 1, y),
+            )
             match c:
                 case "|":
                     graph[p] = [n, s]
@@ -67,9 +70,7 @@ def parse_graph(lines: list[str]) -> tuple[Point, Graph]:
                 case _:
                     pass
 
-    graph[start] = [
-        p for p, connections in graph.items() if start in connections
-    ]
+    graph[start] = [p for p, connections in graph.items() if start in connections]
     return start, graph
 
 
