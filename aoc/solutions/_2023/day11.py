@@ -2,11 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from itertools import combinations
-from typing import TypeAlias
 
 from aoc.utils.interfaces import Solution
-
-# TODO: find a way to abstract the padding
 
 
 @dataclass(frozen=True, eq=True)
@@ -18,51 +15,46 @@ class Point:
         return abs(self.x - p.x) + abs(self.y - p.y)
 
 
-Grid: TypeAlias = dict[Point, str]
-
-
 def main(puzzle_input: list[str]) -> Solution:
-    grid = parse_graph(puzzle_input)
-    galaxy_paths = [k for k, v in grid.items() if v != "."]
+    galaxy_positions_1 = parse_graph(puzzle_input)
+    galaxy_positions_2 = parse_graph(puzzle_input, scale=1_000_000)
     return Solution(
-        sum(g1.manhattan_distance(g2) for g1, g2 in combinations(galaxy_paths, r=2)),
+        sum(
+            g1.manhattan_distance(g2)
+            for g1, g2 in combinations(galaxy_positions_1, r=2)
+        ),
+        sum(
+            g1.manhattan_distance(g2)
+            for g1, g2 in combinations(galaxy_positions_2, r=2)
+        ),
     )
 
 
-def parse_graph(lines: list[str]) -> Grid:
-    # Inflate
-    new_rows = [idx for idx, line in enumerate(lines) if all(c == "." for c in line)]
-
-    new_cols = []
+def parse_graph(lines: list[str], scale: int = 2) -> list[Point]:
+    blank_rows = [idx for idx, line in enumerate(lines) if all(c == "." for c in line)]
+    blank_cols = []
     for col in range(len(lines[0])):
         if all(lines[row][col] == "." for row in range(len(lines))):
-            new_cols.append(col)
+            blank_cols.append(col)
 
-    for offset, row in enumerate(new_rows):
-        lines.insert(row + offset, "." * len(lines[0]))
-
-    new_lines = []
-    for line in lines:
-        new_line = [c for c in line]
-        for offset, col in enumerate(new_cols):
-            new_line.insert(col + offset, ".")
-        new_lines.append("".join(new_line))
-
-    # Build graph
-    graph = {}
-    galaxy = 1
-    for y, line in enumerate(new_lines):
+    galaxy_positions = []
+    for y, line in enumerate(lines):
         for x, c in enumerate(line):
-            if c != ".":
-                graph[Point(x, y)] = str(galaxy)
-                galaxy += 1
-            else:
-                graph[Point(x, y)] = c
-    return graph
+            if c == ".":
+                continue
+            adj_x, adj_y = x, y
+            for blank in blank_rows:
+                if y > blank:
+                    adj_y += scale - 1
+            for blank in blank_cols:
+                if x > blank:
+                    adj_x += scale - 1
+            galaxy_positions.append(Point(adj_x, adj_y))
+    return galaxy_positions
 
 
 if __name__ == "__main__":
-    sample_1 = """...#......
+    sample = """...#......
 .......#..
 #.........
 ..........
@@ -73,6 +65,16 @@ if __name__ == "__main__":
 .......#..
 #...#.....
 """
-    s = main(sample_1.splitlines())
+    s = main(sample.splitlines())
     print(s)
     assert s.part1 == 374
+    a = sum(
+        g1.manhattan_distance(g2)
+        for g1, g2 in combinations(parse_graph(sample.splitlines(), scale=10), r=2)
+    )
+    assert a == 1030
+    b = sum(
+        g1.manhattan_distance(g2)
+        for g1, g2 in combinations(parse_graph(sample.splitlines(), scale=100), r=2)
+    )
+    assert b == 8410
