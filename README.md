@@ -114,6 +114,7 @@ section below.
 * Day 10: [Pipe Maze](https://adventofcode.com/2023/day/10) | [solution](./aoc/solutions/_2023/day10.py)
 * Day 11: [Cosmic Expansion](https://adventofcode.com/2023/day/11) | [solution](./aoc/solutions/_2023/day11.py)
 * Day 12: [Hot Springs](https://adventofcode.com/2023/day/12) | [solution](./aoc/solutions/_2023/day12.py)
+* Day 13: [Point of Incidence](https://adventofcode.com/2023/day/13) | [solution](./aoc/solutions/_2023/day13.py)
 
 </details>
 

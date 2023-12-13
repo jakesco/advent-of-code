@@ -5,7 +5,7 @@ from typing import Self
 
 from aoc.utils.interfaces import Solution
 
-# TODO: This needs to be faster for part 2
+# TODO: Dynamic programming for part 2
 
 
 @dataclass
