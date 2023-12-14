@@ -115,6 +115,7 @@ section below.
 * Day 11: [Cosmic Expansion](https://adventofcode.com/2023/day/11) | [solution](./aoc/solutions/_2023/day11.py)
 * Day 12: [Hot Springs](https://adventofcode.com/2023/day/12) | [solution](./aoc/solutions/_2023/day12.py)
 * Day 13: [Point of Incidence](https://adventofcode.com/2023/day/13) | [solution](./aoc/solutions/_2023/day13.py)
+* Day 14: [Parabolic Reflector Dish](https://adventofcode.com/2023/day/14) | [solution](./aoc/solutions/_2023/day14.py)
 
 </details>
 
