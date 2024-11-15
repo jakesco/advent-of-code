@@ -1,11 +1,11 @@
-from collections import defaultdict
-from pprint import pprint
-from dataclasses import dataclass, field
 import enum
+from dataclasses import dataclass, field
+from pprint import pprint
 
 from aoc.utils.interfaces import Solution
 
 # TODO: Probably don't need to simulate the beams
+
 
 class D(enum.Enum):
     UP = enum.auto()
@@ -43,6 +43,7 @@ class Beam:
     def process(self, c: str):
         print(c)
 
+
 @dataclass
 class Grid:
     _grid: list[str]
@@ -53,7 +54,7 @@ class Grid:
     def print(self) -> None:
         for line in self._grid:
             for c in line:
-                print(c, end='')
+                print(c, end="")
             print()
 
 
@@ -82,6 +83,7 @@ def simulate_beam(grid: Grid) -> list[Beam]:
                 beam.stopped = True
 
     return beams
+
 
 def process(beam: Beam, c: str) -> Beam | None:
     if c == ".":

@@ -1,20 +1,17 @@
-PYTHON_VENV := ./venv/bin/python
+fix:
+	uv run ruff format . && uv run ruff check . --fix
 
-fix: venv
-	$(PYTHON_VENV) -m black aoc/ tests/ && $(PYTHON_VENV) -m ruff aoc/ tests/ --fix
-
-new: venv
-	$(PYTHON_VENV) aoc --download $(year) $(day) &
+new:
+	uv run aoc --download $(year) $(day) &
 	cp -n aoc/solutions/template.py aoc/solutions/_$(year)/day$(day).py
 
-install: venv
-	$(PYTHON_VENV) -m pip install -r requirements.txt -e .
+install:
+	uv sync
 
-test: venv
-	$(PYTHON_VENV) -m pytest tests
+test:
+	uv run pytest
 
-venv:
-	python3.11 -m venv venv
-	$(PYTHON_VENV) -m pip install -U pip setuptools
+watch-tests:
+	find aoc tests -name *.py | entr -c uv run pytest
 
 .PHONY: new fix install test

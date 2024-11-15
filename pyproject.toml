@@ -1,26 +1,18 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "aoc"
 description = "Advent of Code"
 classifiers = ["Private :: Do Not Upload"]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dynamic = ["version", "readme"]
 
-[tool.setuptools.dynamic]
-readme = {file = ["README.md"], content-type = "text/markdown"}
-version = {attr = "aoc.__version__"}
+[tool.hatch.version]
+path = "aoc/__init__.py"
 
-[project.optional-dependencies]
-dev = [
-    "black",
-    "pytest",
-    "ruff",
-]
-
-[tool.ruff]
+[tool.ruff.lint]
 select = [
     "F",
     "E",
@@ -31,11 +23,14 @@ ignore = [
     "E741",
     "E731",
 ]
-src = ["src", "tests"]
-target-version = "py311"
+isort.known-first-party = ["aoc"]
 
-[tool.ruff.isort]
-known-first-party = ["aoc"]
-
-[tool.ruff.mccabe]
-max-complexity = 10
+[dependency-groups]
+dev = [
+    "mypy>=1.13.0",
+    "pylsp-mypy>=0.6.9",
+    "pytest>=8.3.3",
+    "python-lsp-ruff>=2.2.2",
+    "python-lsp-server>=1.12.0",
+    "ruff>=0.7.4",
+]

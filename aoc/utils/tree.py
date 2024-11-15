@@ -9,6 +9,7 @@ usage:
     root.add(t.Node("child2"))
     t.print_tree(root)
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator
