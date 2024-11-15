@@ -14,4 +14,4 @@ test:
 watch-tests:
 	find aoc tests -name *.py | entr -c uv run pytest
 
-.PHONY: new fix install test
+.PHONY: new fix install test watch-tests
