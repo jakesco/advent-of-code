@@ -18,3 +18,6 @@ $ cabal run DayXX /path/to/input.txt
 - Day 07: [Bridge Repair](https://adventofcode.com/2024/day/7) | [solution](./solutions/Day07.hs)
 - Day 08: [Resonant Collinearity](https://adventofcode.com/2024/day/8) | [solution](./solutions/Day08.hs)
 - Day 09: [Disk Fragmenter](https://adventofcode.com/2024/day/9) | [solution](./solutions/Day09.hs)
+- Day 10: [Hoof It](https://adventofcode.com/2024/day/10) | [solution](./solutions/Day10.hs)
+- Day 11: [Plutonian Pebbles](https://adventofcode.com/2024/day/11) | [solution](./solutions/Day11.hs)
+- Day 12: [Garden Groups](https://adventofcode.com/2024/day/12) | [solution](./solutions/Day12.hs)

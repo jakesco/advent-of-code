@@ -70,3 +70,11 @@ executable Day09
 executable Day10
     import:           base
     main-is:          Day10.hs
+
+executable Day11
+    import:           base
+    main-is:          Day11.hs
+
+executable Day12
+    import:           base
+    main-is:          Day12.hs

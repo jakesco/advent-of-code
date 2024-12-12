@@ -5,9 +5,10 @@ import Control.Arrow ((&&&))
 import Data.Char (digitToInt)
 import Data.Maybe (fromMaybe, isJust, isNothing)
 
-type Input = [Maybe Int]
+type Input = String
 
 -- alias just to keep functions organized
+type UnpackedBlock = [Maybe Int]
 type PackedBlock = [Maybe Int]
 
 -- NOTE: Look into segment trees
@@ -19,10 +20,10 @@ testInput =
         ]
 
 -- unpack input string
-inflate :: String -> Input
+inflate :: String -> UnpackedBlock
 inflate = go 0 0
   where
-    go :: Int -> Int -> String -> Input
+    go :: Int -> Int -> String -> UnpackedBlock
     go _ _ [] = []
     go idx fileId (d : ds) =
         let
@@ -32,13 +33,13 @@ inflate = go 0 0
                 then replicate count (Just fileId) <> go (idx + 1) (fileId + 1) ds
                 else replicate count Nothing <> go (idx + 1) fileId ds
 
-pack :: Input -> PackedBlock
+pack :: UnpackedBlock -> PackedBlock
 pack block = go 0 block (reverse $ filter isJust block)
   where
     expectedLen :: Int
     expectedLen = uncurry (-) $ (length &&& (length . filter isNothing)) block
 
-    go :: Int -> Input -> [Maybe Int] -> PackedBlock
+    go :: Int -> UnpackedBlock -> [Maybe Int] -> PackedBlock
     go len (x : xs) rev@(y : ys)
         | len >= expectedLen = []
         | otherwise =
@@ -47,20 +48,20 @@ pack block = go 0 block (reverse $ filter isJust block)
                 else x : go (succ len) xs rev
     go _ _ _ = []
 
-packWholeFiles :: Input -> PackedBlock
+packWholeFiles :: UnpackedBlock -> PackedBlock
 packWholeFiles = undefined
 
 checksum :: PackedBlock -> Int
 checksum = sum . zipWith (*) [0 ..] . map (fromMaybe 0)
 
 part1 :: Input -> Int
-part1 = checksum . pack
+part1 = checksum . pack . inflate
 
 part2 :: Input -> Int
-part2 = checksum . packWholeFiles
+part2 = checksum . packWholeFiles . inflate
 
 prepare :: [String] -> Input
-prepare = inflate . head
+prepare = head
 
 main :: IO ()
 main = run part1 part2 prepare
