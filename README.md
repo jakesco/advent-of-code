@@ -123,6 +123,9 @@ My solutions for [Advent of Code](https://adventofcode.com).
 - Day 07: [Bridge Repair](https://adventofcode.com/2024/day/7) | [solution](./2024/solutions/Day07.hs)
 - Day 08: [Resonant Collinearity](https://adventofcode.com/2024/day/8) | [solution](./2024/solutions/Day08.hs)
 - Day 09: [Disk Fragmenter](https://adventofcode.com/2024/day/9) | [solution](./2024/solutions/Day09.hs)
+- Day 10: [Hoof It](https://adventofcode.com/2024/day/10) | [solution](./2024/solutions/Day10.hs)
+- Day 11: [Plutonian Pebbles](https://adventofcode.com/2024/day/11) | [solution](./2024/solutions/Day11.hs)
+- Day 12: [Garden Groups](https://adventofcode.com/2024/day/12) | [solution](./2024/solutions/Day12.hs)
 
 </details>
 
