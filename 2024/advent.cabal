@@ -1,0 +1,72 @@
+cabal-version:   3.0
+name:            advent
+version:         0.1.0.0
+author:          Jake Scott
+maintainer:      scottj1123@gmail.com
+extra-doc-files: README.md
+
+library
+    default-language: GHC2021
+    ghc-options:      -Wall
+    build-depends:    base ^>=4.17.2.1
+                    , containers
+    exposed-modules:  Advent.Utils
+                    , Advent.Parser
+                    , Advent.Grid
+                    , Advent.Graph
+    hs-source-dirs:   solutions
+
+common base
+    default-language: GHC2021
+    ghc-options:      -Wall
+    build-depends:    base ^>=4.17.2.1
+                      , split
+                      , containers
+                      , array
+                      , mtl
+                      , advent
+    hs-source-dirs:   solutions
+    other-modules:    Advent.Utils
+                    , Advent.Parser
+                    , Advent.Grid
+                    , Advent.Graph
+
+executable Day01
+    import:           base
+    main-is:          Day01.hs
+
+executable Day02
+    import:           base
+    main-is:          Day02.hs
+
+executable Day03
+    import:           base
+    main-is:          Day03.hs
+
+executable Day04
+    import:           base
+    main-is:          Day04.hs
+
+executable Day05
+    import:           base
+    main-is:          Day05.hs
+
+executable Day06
+    import:           base
+    main-is:          Day06.hs
+
+executable Day07
+    import:           base
+    main-is:          Day07.hs
+
+executable Day08
+    import:           base
+    main-is:          Day08.hs
+
+executable Day09
+    import:           base
+    main-is:          Day09.hs
+
+executable Day10
+    import:           base
+    main-is:          Day10.hs

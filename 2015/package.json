@@ -1,0 +1,34 @@
+{
+  "name": "aoc2015",
+  "version": "1.0.0",
+  "description": "Advent of Code 2015 in TypeScript",
+  "main": "./dist/index.js",
+  "bin": {
+    "aoc": "./dist/index.js"
+  },
+  "scripts": {
+    "aoc": "npx ts-node ./src/index.ts",
+    "build": "npx tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jakesco/AOC2015.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jakesco/AOC2015/issues"
+  },
+  "homepage": "https://github.com/jakesco/AOC2015#readme",
+  "devDependencies": {
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "blueimp-md5": "^2.19.0",
+    "commander": "^9.4.0"
+  }
+}

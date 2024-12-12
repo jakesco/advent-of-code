@@ -1,0 +1,76 @@
+cabal-version:   3.8
+name:            advent
+version:         0.1.0.0
+author:          Jake Scott
+maintainer:      scottj1123@gmail.com
+extra-doc-files: README.md
+
+library
+    default-language: GHC2021
+    ghc-options:      -Wall
+    build-depends:    base ^>=4.17.2.1
+                      , containers
+    exposed-modules:    Advent.Utils
+                      , Advent.Parser
+                      , Advent.Graph
+                      , Advent.Grid
+    hs-source-dirs:   solutions
+
+common shared-properties
+    default-language: GHC2021
+    ghc-options:      -Wall
+    build-depends:      base ^>=4.17.2.1
+                      , split
+                      , containers
+                      , array
+                      , mtl
+                      , advent
+    hs-source-dirs:   solutions
+    other-modules:      Advent.Utils
+                      , Advent.Parser
+                      , Advent.Graph
+                      , Advent.Grid
+
+executable Day01
+    import:           shared-properties
+    main-is:          Day01.hs
+
+executable Day02
+    import:           shared-properties
+    main-is:          Day02.hs
+
+executable Day03
+    import:           shared-properties
+    main-is:          Day03.hs
+
+executable Day04
+    import:           shared-properties
+    main-is:          Day04.hs
+
+executable Day05
+    import:           shared-properties
+    main-is:          Day05.hs
+
+executable Day06
+    import:           shared-properties
+    main-is:          Day06.hs
+
+executable Day07
+    import:           shared-properties
+    main-is:          Day07.hs
+
+executable Day08
+    import:           shared-properties
+    main-is:          Day08.hs
+
+executable Day09
+    import:           shared-properties
+    main-is:          Day09.hs
+
+executable Day10
+    import:           shared-properties
+    main-is:          Day10.hs
+
+executable Day11
+    import:           shared-properties
+    main-is:          Day11.hs

@@ -1,0 +1,5 @@
+.idea/
+/target
+/.inputs
+*.txt
+.token

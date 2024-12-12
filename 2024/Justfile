@@ -1,0 +1,9 @@
+alias dl := input
+
+new day:
+    cp -n Template.hs solutions/Day{{day}}.hs
+    echo "\nexecutable Day{{day}}\n    import:           base\n    main-is:          Day{{day}}.hs" >> advent.cabal
+
+input day:
+    curl "https://adventofcode.com/2024/day/{{day}}/input" \
+        --header "Cookie: $(cat .token)" > input.txt
