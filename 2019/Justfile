@@ -3,7 +3,7 @@ alias t := test
 alias dl := input
 
 new day:
-    cp -n src/template.rs src/bin/day{{day}}.rs
+    cp -n template.rs src/bin/day{{day}}.rs
     nvim src/bin/day{{day}}.rs
 
 test day:

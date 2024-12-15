@@ -27,8 +27,7 @@ My solutions for [Advent of Code](https://adventofcode.com).
 <details>
 <summary>2019 [Rust]</summary>
 
-- Day 01: [The Tyranny of the Rocket Equation](https://adventofcode.com/2019/day/1) | [solution](./2019/src/solutions/day01.rs)
-- Day 02: [1202 Program Alarm](https://adventofcode.com/2019/day/2) | [solution](./2019/src/solutions/day02.rs)
+- Day 01: [The Tyranny of the Rocket Equation](https://adventofcode.com/2019/day/1) | [solution](./2019/src/bin/day01.rs)
 
 </details>
 
