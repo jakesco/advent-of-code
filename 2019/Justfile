@@ -10,5 +10,5 @@ test day:
     fd {{day}} | entr -c cargo test --bin day{{day}}
 
 input day:
-    curl "https://adventofcode.com/2024/day/{{day}}/input" \
+    curl "https://adventofcode.com/2019/day/{{day}}/input" \
         --header "Cookie: $(cat .token)" > input.txt

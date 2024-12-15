@@ -1,15 +1,34 @@
 use advent::get_input;
 
-type Input = Vec<String>;
+type Input = Vec<i32>;
 
-fn solve(_input: &Input) -> (i32, i32) {
-    let part1 = 0;
-    let part2 = 0;
+fn fuel(mass: i32) -> i32 {
+    mass / 3 - 2
+}
+
+fn recursive_fuel(mass: i32) -> i32 {
+    let m = fuel(mass);
+    if m <= 0 {
+        0
+    } else {
+        m + recursive_fuel(m)
+    }
+}
+
+fn solve(input: &Input) -> (i32, i32) {
+    let part1 = input.iter().copied().fold(0, |acc, x| acc + fuel(x));
+    let part2 = input
+        .iter()
+        .copied()
+        .fold(0, |acc, x| acc + recursive_fuel(x));
     (part1, part2)
 }
 
 fn prepare(lines: Vec<String>) -> Input {
     lines
+        .into_iter()
+        .filter_map(|line| line.parse().ok())
+        .collect()
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -24,21 +43,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 mod tests {
     use super::*;
 
-    macro_rules! input {
-        ($raw:expr) => {
-            $raw.lines().map(String::from).collect::<Vec<_>>()
-        };
+    #[test]
+    fn test_fuel_calc() {
+        assert_eq!(fuel(12), 2);
+        assert_eq!(fuel(14), 2);
+        assert_eq!(fuel(1969), 654);
+        assert_eq!(fuel(100756), 33583);
     }
 
-    const EXAMPLE: &str = "\
-first line
-second line";
-
     #[test]
-    fn test_example() {
-        let input = prepare(input!(EXAMPLE));
-        let (part1, part2) = solve(&input);
-        assert_eq!(part1, 0);
-        assert_eq!(part2, 0);
+    fn test_recursive_fuel_calc() {
+        assert_eq!(recursive_fuel(14), 2);
+        assert_eq!(recursive_fuel(1969), 966);
+        assert_eq!(recursive_fuel(100756), 50346);
     }
 }
