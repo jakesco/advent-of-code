@@ -1,0 +1,14 @@
+alias n := new
+alias t := test
+alias dl := input
+
+new day:
+    cp -n src/template.rs src/bin/day{{day}}.rs
+    nvim src/bin/day{{day}}.rs
+
+test day:
+    fd {{day}} | entr -c cargo test --bin day{{day}}
+
+input day:
+    curl "https://adventofcode.com/2024/day/{{day}}/input" \
+        --header "Cookie: $(cat .token)" > input.txt

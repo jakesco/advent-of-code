@@ -1,5 +1,5 @@
 [package]
-name = "aoc2019"
+name = "advent"
 version = "0.1.0"
 edition = "2021"
 
