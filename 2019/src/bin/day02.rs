@@ -1,6 +1,6 @@
 use advent::get_input;
 
-use advent::intcode::*;
+use advent::IntCode;
 
 type Input = IntCode;
 

@@ -1,7 +1,11 @@
 use std::env;
 use std::fs;
 
-pub mod intcode;
+mod grid;
+pub use grid::{Grid, P};
+
+mod intcode;
+pub use intcode::IntCode;
 
 /// Read puzzle input from given cli argument (defaults to input.txt).
 /// Applies given prepare function to file contents.
