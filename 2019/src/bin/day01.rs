@@ -15,12 +15,13 @@ fn recursive_fuel(mass: i32) -> i32 {
     }
 }
 
+fn sum_fold(input: &Input, f: fn(i32) -> i32) -> i32 {
+    input.iter().copied().fold(0, |acc, x| acc + f(x))
+}
+
 fn solve(input: &Input) -> (i32, i32) {
-    let part1 = input.iter().copied().fold(0, |acc, x| acc + fuel(x));
-    let part2 = input
-        .iter()
-        .copied()
-        .fold(0, |acc, x| acc + recursive_fuel(x));
+    let part1 = sum_fold(input, fuel);
+    let part2 = sum_fold(input, recursive_fuel);
     (part1, part2)
 }
 
