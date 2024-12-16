@@ -1,5 +1,3 @@
-use core::panic;
-
 #[derive(Debug)]
 pub struct IntCode {
     tape: Vec<usize>,
@@ -49,11 +47,13 @@ impl IntCode {
     /// Swaps positon 1 and 2 in memory with given values
     pub fn swap(&mut self, noun: usize, verb: usize) {
         self.memory[1] = noun;
-        self.memory[2] = verb
+        self.memory[2] = verb;
     }
 
     pub fn reset(&mut self) {
         self.memory = self.tape.clone();
+        self.ptr = 0;
+        self.halt = false;
     }
 
     pub fn result(&self) -> usize {
@@ -111,6 +111,16 @@ mod tests {
         let mut ic = IntCode::new(vec![99]);
         ic.step();
         assert!(ic.halt);
+    }
+
+    #[test]
+    fn test_reset() {
+        let mut ic = IntCode::new(vec![1, 0, 0, 3, 99]);
+        ic.run();
+        ic.reset();
+        assert_eq!(ic.memory, vec![1, 0, 0, 3, 99]);
+        assert_eq!(ic.ptr, 0);
+        assert!(!ic.halt)
     }
 
     #[test]

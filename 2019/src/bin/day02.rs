@@ -4,14 +4,18 @@ use advent::intcode::*;
 
 type Input = IntCode;
 
-fn search(vm: &mut IntCode) -> Option<(usize, usize)> {
+fn run_vm(vm: &mut Input, noun: usize, verb: usize) -> usize {
+    vm.reset();
+    vm.swap(noun, verb);
+    vm.run();
+    vm.result()
+}
+
+fn search(vm: &mut IntCode) -> Option<usize> {
     for n in 0..=99 {
         for v in 0..=99 {
-            vm.reset();
-            vm.swap(n, v);
-            vm.run();
-            if vm.result() == 19690720 {
-                return Some((n, v));
+            if run_vm(vm, n, v) == 19690720 {
+                return Some(100 * n + v);
             }
         }
     }
@@ -19,13 +23,8 @@ fn search(vm: &mut IntCode) -> Option<(usize, usize)> {
 }
 
 fn solve(input: &mut Input) -> (usize, usize) {
-    input.swap(12, 2);
-    input.run();
-    let part1 = input.result();
-
-    let (n, v) = search(input).unwrap();
-
-    let part2 = 100 * n + v;
+    let part1 = run_vm(input, 12, 2);
+    let part2 = search(input).expect("Failed to find noun/verb pair");
     (part1, part2)
 }
 
