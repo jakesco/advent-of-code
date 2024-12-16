@@ -25,11 +25,8 @@ fn solve(input: &Input) -> (i32, i32) {
     (part1, part2)
 }
 
-fn prepare(lines: Vec<String>) -> Input {
-    lines
-        .into_iter()
-        .filter_map(|line| line.parse().ok())
-        .collect()
+fn prepare(s: String) -> Input {
+    s.lines().filter_map(|line| line.parse().ok()).collect()
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

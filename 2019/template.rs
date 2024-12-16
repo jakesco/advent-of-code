@@ -8,8 +8,8 @@ fn solve(_input: &Input) -> (i32, i32) {
     (part1, part2)
 }
 
-fn prepare(lines: Vec<String>) -> Input {
-    lines
+fn prepare(s: String) -> Input {
+    s.lines()
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -24,19 +24,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 mod tests {
     use super::*;
 
-    macro_rules! input {
-        ($raw:expr) => {
-            $raw.lines().map(String::from).collect::<Vec<_>>()
-        };
-    }
-
     const EXAMPLE: &str = "\
 first line
 second line";
 
     #[test]
     fn test_example() {
-        let input = prepare(input!(EXAMPLE));
+        let input = prepare(EXAMPLE);
         let (part1, part2) = solve(&input);
         assert_eq!(part1, 0);
         assert_eq!(part2, 0);

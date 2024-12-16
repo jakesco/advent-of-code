@@ -28,12 +28,8 @@ fn solve(input: &mut Input) -> (usize, usize) {
     (part1, part2)
 }
 
-fn prepare(lines: Vec<String>) -> Input {
-    lines
-        .first()
-        .expect("No IntCode program supplied")
-        .parse()
-        .expect("Failed to parse IntCode program.")
+fn prepare(s: String) -> Input {
+    s.parse().expect("Failed to parse IntCode program.")
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
