@@ -4,15 +4,20 @@ use std::collections::HashMap;
 /// Grid represented as width, height, and a map from positions to values
 #[derive(Debug, Clone, PartialEq)]
 pub struct Grid<T> {
-    width: i32,
-    height: i32,
+    width: usize,
+    height: usize,
     cells: HashMap<P, T>,
 }
 
 impl<T> Grid<T> {
     /// Create an empty grid of given dimensions
-    pub fn empty(width: i32, height: i32) -> Self {
-        todo!()
+    pub fn empty(width: usize, height: usize) -> Self {
+        let cells: HashMap<P, T> = HashMap::new();
+        Grid {
+            width,
+            height,
+            cells,
+        }
     }
 
     /// Create a grid from a vector of vectors
@@ -20,7 +25,20 @@ impl<T> Grid<T> {
     where
         T: Clone,
     {
-        todo!()
+        let height = data.len();
+        let width = data[0].len();
+        let mut cells: HashMap<P, T> = HashMap::new();
+        for y in 0..height {
+            for x in 0..width {
+                let p = P::new(x.try_into().unwrap(), y.try_into().unwrap());
+                cells.insert(p, data[y][x].clone());
+            }
+        }
+        Self {
+            width,
+            height,
+            cells,
+        }
     }
 
     /// Convert grid to vector of vectors, with Options for missing values
