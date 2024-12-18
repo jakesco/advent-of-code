@@ -1,4 +1,5 @@
-use std::ops::{Add, Div, Mul, Sub};
+use std::cmp::max;
+use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Sub};
 
 /// Point in the grid represented as (x, y) coordinates
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -14,27 +15,28 @@ impl P {
 
     /// Calculate Manhattan distance to another position
     pub fn manhattan_distance(&self, other: P) -> i32 {
-        todo!()
+        (other.x - self.x).abs() + (other.y - self.y).abs()
     }
 
     /// Calculate Chebyshev distance to another position
     pub fn chebyshev_distance(&self, other: P) -> i32 {
-        todo!()
+        max((other.x - self.x).abs(), (other.y - self.y).abs())
     }
 
     /// Rotate position 90 degrees clockwise around origin
     pub fn rotate_clockwise(&self) -> P {
-        todo!()
+        P {
+            x: -self.y,
+            y: self.x,
+        }
     }
 
     /// Rotate position 90 degrees counter-clockwise around origin
     pub fn rotate_counter_clockwise(&self) -> P {
-        todo!()
-    }
-
-    /// Get the unit vector in this direction (normalized to -1, 0, or 1 for each component)
-    pub fn normalize(&self) -> P {
-        todo!()
+        P {
+            x: self.y,
+            y: -self.x,
+        }
     }
 }
 
@@ -43,7 +45,19 @@ impl Add for P {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        todo!()
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+impl AddAssign for P {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
     }
 }
 
@@ -51,7 +65,10 @@ impl Sub for P {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        todo!()
+        Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        }
     }
 }
 
@@ -60,7 +77,19 @@ impl Mul<i32> for P {
     type Output = Self;
 
     fn mul(self, scalar: i32) -> Self {
-        todo!()
+        Self {
+            x: self.x * scalar,
+            y: self.y * scalar,
+        }
+    }
+}
+
+impl MulAssign<i32> for P {
+    fn mul_assign(&mut self, scalar: i32) {
+        *self = Self {
+            x: self.x * scalar,
+            y: self.y * scalar,
+        }
     }
 }
 
@@ -69,7 +98,10 @@ impl Div<i32> for P {
     type Output = Self;
 
     fn div(self, scalar: i32) -> Self {
-        todo!()
+        Self {
+            x: self.x / scalar,
+            y: self.y / scalar,
+        }
     }
 }
 
