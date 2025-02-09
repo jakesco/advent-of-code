@@ -1,3 +1,5 @@
 /target
 *.txt
 .token
+*.o
+.zig-cache/
