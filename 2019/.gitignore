@@ -3,3 +3,4 @@
 .token
 *.o
 .zig-cache/
+zig-out/
