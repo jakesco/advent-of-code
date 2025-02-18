@@ -1,0 +1,5 @@
+alias dl := input
+
+input day:
+    curl "https://adventofcode.com/2019/day/{{day}}/input" \
+        --header "Cookie: $(cat .token)" > input.txt
