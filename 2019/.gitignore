@@ -4,3 +4,4 @@
 *.o
 .zig-cache/
 zig-out/
+target/

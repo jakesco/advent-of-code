@@ -1,4 +1,5 @@
 const std = @import("std");
+const advent = @import("advent");
 
 const Solution = struct {
     part1: i64,
